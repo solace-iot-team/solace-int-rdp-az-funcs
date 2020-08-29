@@ -1,6 +1,6 @@
 # Deploy
 
-**_Note: You can also deploy using Visual Studio Code._**
+**_Note: You can also deploy the functions using Visual Studio Code._**
 
 Create zip deploy files and deploy to Azure.
 
@@ -8,12 +8,11 @@ Create zip deploy files and deploy to Azure.
 
 ````bash
 ./build.zip-deploy.sh
-
 ````
 
 ## Deploy to Azure
 
-TODO
+[Using ARM](./arm)
 
 ---
 The End.
