@@ -1,0 +1,5 @@
+*.log
+tmp
+deployed
+settings.az-func.yml
+*.pem
