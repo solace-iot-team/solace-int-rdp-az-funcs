@@ -23,28 +23,17 @@
 # SOFTWARE.
 # ---------------------------------------------------------------------------------------------
 
-clear
+SCRIPT_PATH=$(cd $(dirname "$0") && pwd);
 
-#####################################################################################
-# settings
-#
-    scriptDir=$(pwd)
+##############################################################################################################################
+# Settings
 
-    settingsFile="$scriptDir/settings.json"
-    settings=$(cat $settingsFile | jq .)
-      projectName=$( echo $settings | jq -r '.projectName' )
+##############################################################################################################################
+# Run
 
-echo
-echo "##########################################################################################"
-echo "# Deploy Project to Azure"
-echo "# Project Name   : '$projectName'"
-echo "# Settings:"
-echo $settings | jq
-
-echo; read -n 1 -p "- Press key to continue, CTRL-C to exit ..." x; echo; echo
-
-source ./common.create.sh; cd $scriptDir
-source ./rdp2blob.create.sh; cd $scriptDir
+runScript="$SCRIPT_PATH/../deploy/.run.test.sh"
+  $runScript
+  if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
 
 ###
 # The End.

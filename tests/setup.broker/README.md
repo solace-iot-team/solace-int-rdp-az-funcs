@@ -4,6 +4,9 @@
 
 * [Create Azure Resources & Deploy](../../deploy).
 * [Download Azure Root Certificate](https://cacerts.digicert.com/BaltimoreCyberTrustRoot.crt.pem).
+  ````bash
+  cp {certificate}.pem .
+  ````
 
 ## Prepare Setup Broker
 
