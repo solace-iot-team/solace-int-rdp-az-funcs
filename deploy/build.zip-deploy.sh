@@ -56,8 +56,12 @@ done
 #####################################################################################
 # Build the project
 cd $tmpDir
-npm install --production > /dev/null 2>&1
+npm install > /dev/null 2>&1
 npm run build > /dev/null 2>&1
+#####################################################################################
+# Delete node-modules and re-install with production only
+rm -rf node_modules
+npm install --production > /dev/null 2>&1
 #####################################################################################
 # Build zip files
 for function in ${functions[@]}; do

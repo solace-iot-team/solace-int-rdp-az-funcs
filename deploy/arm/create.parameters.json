@@ -5,14 +5,8 @@
         "projectName": {
             "value": "solace-int-rdp-az-funcs"
         },
-        "azLocation": {
-            "value": "UK South"
-        },
-        "blobStorageSKU": {
-            "value": "Standard_RAGRS"
-        },
-        "blobStorageName": {
-            "value": "solaceintrdpstorage"
+        "functionAppStorageName": {
+            "value": "solacerdpappstorage"
         }
     }
 }

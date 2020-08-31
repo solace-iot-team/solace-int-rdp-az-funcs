@@ -9,6 +9,30 @@
                 "description": "The Project name. Must be unique in AZ Subscription."
             }
         },
+        "dataLakeStorageSKU": {
+            "type": "string",
+            "defaultValue": "Standard_RAGRS",
+            "metadata": {
+                "description": "The target data lake blob storage sku."
+            },
+             "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_RAGRS",
+                "Standard_ZRS",
+                "Premium_LRS",
+                "Premium_ZRS",
+                "Standard_GZRS",
+                "Standard_RAGZRS"
+            ]
+        },
+        "dataLakeStorageName": {
+            "type": "string",
+            "defaultValue": "solaceintrdpdatalake",
+            "metadata": {
+                "description": "The target data lake blob storage name. Must be unique in AZ Subscription."
+            }
+        },
         "functionAppStorageName": {
             "type": "string",
             "defaultValue": "solacerdpappstorage",
@@ -180,8 +204,56 @@
                     ]
                 }
             }
-        }
+        },
+
+
+                {
+            "comments": "The blob storage account (data lake) for the function app",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "name": "[parameters('blobStorageName')]",
+            "location": "[parameters('azLocation')]",
+            "tags": {
+                "projectName": "[parameters('projectName')]"
+            },
+            "sku": {
+                "name": "[parameters('blobStorageSKU')]",
+                "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "largeFileSharesState": "Disabled",
+                "isHnsEnabled": true,
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "keyType": "Account",
+                            "enabled": true
+                        },
+                        "blob": {
+                            "keyType": "Account",
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
+            }
+        },
+
+
     ],
     "outputs": {
+        "blobStorageAccountConnectionString": {  
+            "type": "string",  
+            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('blobStorageName'), ';AccountKey=', listKeys(resourceId(resourceGroup().name,'Microsoft.Storage/storageAccounts', parameters('blobStorageName')), '2019-04-01').keys[0].value,';EndpointSuffix=core.windows.net')]"  
+        }
     }
 }

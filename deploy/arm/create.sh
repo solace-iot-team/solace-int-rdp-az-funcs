@@ -14,7 +14,7 @@ clear
     templateFile="create.template.json"
     parametersFile="parameters.json"
     outputDir="./deployment"
-    outputFile="create-output.json"
+    outputFile="deploy-output.json"
 
 echo
 echo "##########################################################################################"
@@ -67,7 +67,7 @@ echo "TODO: Now the function specific stuff"
 # // "STORAGE_PATH_PREFIX": "solace-rdp-2-blob"
 #
 # Then: actually deploy the zip file
-# az functionapp deployment source config-zip -g $resourceGroupName -n zipdeploydemo --src "./zip/AzFunction-ZipDeploy.zip"
+
 
 exit
 
