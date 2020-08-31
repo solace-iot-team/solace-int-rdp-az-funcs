@@ -1,4 +1,11 @@
 {
     "projectName": "solace-int-rdp-az-funcs",
-    "azLocation": "UK South"
+    "azLocation": "UK South",
+    "functionAppAccountName": "solace-int-rdp-az-funcs-fa",
+    "rdp2blobFunction": {
+        "functionName":"solace-rdp-2-blob",
+        "dataLakeStorageContainerName": "rdp2blob",
+        "dataLakeFixedPathPrefix": "fixed/path/prefix",
+        "zipDeployFile": "solace-rdp-2-blob.v0.1.0.zip"
+    }
 }

@@ -84,7 +84,7 @@ for function in ${functions[@]}; do
   cp ./proxies.json $zipDeployTmp
   # create the zip file
   cd $zipDeployTmp
-  zip -r "$zipDeployDir/$function-v$packageVersion.zip" * > /dev/null 2>&1
+  zip -r "$zipDeployDir/$function.v$packageVersion.zip" * > /dev/null 2>&1
 
 done
 #####################################################################################

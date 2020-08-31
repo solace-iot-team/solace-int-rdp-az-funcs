@@ -140,11 +140,11 @@
                     "appSettings": [
                         {
                             "name": "AzureWebJobsStorage",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionAppStorageAccountName'), ';AccountKey=', listKeys(variables('functionAppStorageAccountId'),'2015-05-01-preview').keys[0].value)]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionAppStorageAccountName'), ';AccountKey=', listKeys(variables('functionAppStorageAccountId'),'2015-05-01-preview').key1)]"
                         },
                         {
                             "name": "AzureWebJobsDashboard",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionAppStorageAccountName'), ';AccountKey=', listKeys(variables('functionAppStorageAccountId'),'2015-05-01-preview').keys[0].value)]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionAppStorageAccountName'), ';AccountKey=', listKeys(variables('functionAppStorageAccountId'),'2015-05-01-preview').key1)]"
                         },
                         {
                             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
@@ -171,7 +171,8 @@
                         // storage account and file path where the function app code and configuration are stored.
                         {
                             "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionAppStorageAccountName'), ';AccountKey=', listKeys(variables('functionAppStorageAccountId'),'2015-05-01-preview').keys[0].value)]"
+                            // "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionAppStorageAccountName'), ';AccountKey=', listKeys(variables('functionAppStorageAccountId'),'2015-05-01-preview').keys[0].value)]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionAppStorageAccountName'), ';AccountKey=', listKeys(variables('functionAppStorageAccountId'),'2015-05-01-preview').key1)]"
                         },
                         {
                             "name": "WEBSITE_CONTENTSHARE",

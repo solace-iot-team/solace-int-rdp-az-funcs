@@ -10,21 +10,18 @@ clear
     settingsFile="$scriptDir/settings.json"
     settings=$(cat $settingsFile | jq .)
       projectName=$( echo $settings | jq -r '.projectName' )
-      resourceGroup=$projectName
 
 echo
 echo "##########################################################################################"
-echo "# Delete Project from Azure"
+echo "# Deploy Project to Azure"
 echo "# Project Name   : '$projectName'"
-echo
+echo "# Settings:"
+echo $settings | jq
 
-echo " >>> Deleting Resource Group ..."
-az group delete \
-  --name $resourceGroup \
-  --verbose
-if [[ $? != 0 ]]; then echo " >>> ERR: deleting resource group"; exit 1; fi
-echo " >>> Success."
+echo; read -n 1 -p "- Press key to continue, CTRL-C to exit ..." x; echo; echo
 
+source ./common.create.sh; cd $scriptDir
+source ./rdp2blob.create.sh; cd $scriptDir
 
 ###
 # The End.
