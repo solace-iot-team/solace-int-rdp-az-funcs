@@ -38,16 +38,16 @@ rm -rf $resultsDir/*
 ##############################################################################################################################
 # Run
 
-# runScript="$SCRIPT_PATH/../deploy/.run.test.sh"; echo ">>> $runScript";
-#   $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
-#
-# runScript="$SCRIPT_PATH/setup.broker/.run.test.sh"; echo ">>> $runScript";
-#   $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
-#
-# runScript="$SCRIPT_PATH/broker.post.event.sh"; echo ">>> $runScript";
-#   $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
-#
-# x=$(wait4Time)
+runScript="$SCRIPT_PATH/../deploy/.run.test.sh"; echo ">>> $runScript";
+  $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
+
+runScript="$SCRIPT_PATH/setup.broker/.run.test.sh"; echo ">>> $runScript";
+  $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
+
+runScript="$SCRIPT_PATH/broker.post.event.sh"; echo ">>> $runScript";
+  $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
+
+x=$(wait4Time)
 
 # compare msgs sent & number of files written to blob
 resultsOutputFile="$resultsDir/blob.count.json"
