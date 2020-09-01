@@ -24,16 +24,44 @@
 # ---------------------------------------------------------------------------------------------
 
 SCRIPT_PATH=$(cd $(dirname "$0") && pwd);
+source "./.lib/functions.sh"
 
 ##############################################################################################################################
 # Settings
+  resultsDir="$SCRIPT_PATH/results"
+
+#####################################################################################
+# Prepare Dirs
+mkdir $resultsDir > /dev/null 2>&1
+rm -rf $resultsDir/*
 
 ##############################################################################################################################
 # Run
 
-runScript="$SCRIPT_PATH/../deploy/.run.test.sh"
-  $runScript
-  if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
+# runScript="$SCRIPT_PATH/../deploy/.run.test.sh"; echo ">>> $runScript";
+#   $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
+#
+# runScript="$SCRIPT_PATH/setup.broker/.run.test.sh"; echo ">>> $runScript";
+#   $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
+#
+# runScript="$SCRIPT_PATH/broker.post.event.sh"; echo ">>> $runScript";
+#   $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
+#
+# x=$(wait4Time)
+
+# compare msgs sent & number of files written to blob
+resultsOutputFile="$resultsDir/blob.count.json"
+runScript="$SCRIPT_PATH/../deploy/arm/rdp2blob.count.sh $resultsOutputFile"; echo ">>> $runScript";
+  $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
+
+##############################################################################################################################
+# Done
+
+resultFiles=$(ls $resultsDir)
+for resultFile in $resultFiles; do
+  cat "$resultsDir/$resultFile" | jq
+done
+
 
 ###
 # The End.

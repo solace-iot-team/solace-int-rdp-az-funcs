@@ -22,14 +22,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 # ---------------------------------------------------------------------------------------------
-clear
 
 autoRun=$1
+if [ -z "$autoRun" ]; then clear; fi
 
 #####################################################################################
 # settings
 #
-    # scriptDir=$(pwd)
     scriptDir=$(cd $(dirname "$0") && pwd);
     srcDir="$scriptDir/.."
     tmpDir="$scriptDir/tmp"

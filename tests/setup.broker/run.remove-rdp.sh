@@ -33,6 +33,7 @@ source ./.lib/run.project-env.sh
 ##############################################################################################################################
 # Settings
 
+    scriptDir=$(cd $(dirname "$0") && pwd);
     # deployed rdp function settings
     rdpFunctionSettingsDeployedFile=$(assertFile "./deployed/settings.deployed.yml") || exit
     export AS_SAMPLES_RDP_FUNCTION_SETTINGS_FILE=$rdpFunctionSettingsDeployedFile
@@ -51,14 +52,14 @@ x=$(wait4Key)
 ##############################################################################################################################
 # Prepare
 
-mkdir ./tmp > /dev/null 2>&1
-rm -f ./tmp/*.*
+mkdir $scriptDir/tmp > /dev/null 2>&1
+rm -f $scriptDir/tmp/*.*
 
 ##############################################################################################################################
 # Run
 # select inventory
-brokerInventory=$(assertFile "./broker.inventory.yml") || exit
-playbook="./playbook.remove-rdp.yml"
+brokerInventory=$(assertFile "$scriptDir/broker.inventory.yml") || exit
+playbook="$scriptDir/playbook.remove-rdp.yml"
 
 # --step --check -vvv
 ansible-playbook \

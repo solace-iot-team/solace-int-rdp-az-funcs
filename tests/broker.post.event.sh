@@ -23,11 +23,22 @@
 # SOFTWARE.
 # ---------------------------------------------------------------------------------------------
 
+#####################################################################################
+# settings
+#
+    scriptDir=$(cd $(dirname "$0") && pwd);
+    scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"))
+    resultsDir="$scriptDir/results"
+    resultsOutputFile="$resultsDir/eventsSent.json"
+
+#####################################################################################
+# Prepare Dirs
+mkdir $resultsDir > /dev/null 2>&1
+rm -f $resultsOutputFile
+
 clear
 echo; echo "##############################################################################################################"
-echo
-echo "# Script: "$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
-
+echo "# Script: $scriptName"
 
 brokerRestHost="localhost"
 brokerRestPort=9000
@@ -47,10 +58,13 @@ topics=(
   "$domain/$assetTypeId/$assetId/$regionId/$dataTypeId_2"
 )
 
+msgSentCounter=0
+
 for i in {1..100}; do
   echo " >>> sending event batch number: $i"
   for topic in ${topics[@]}; do
-    echo "   >> topic: $topic"
+    ((msgSentCounter++))
+    echo "   >> ($msgSentCounter)-topic: $topic"
     timestamp=$(date +"%Y-%m-%dT%T.%3NZ")
     payload='
     {
@@ -77,6 +91,15 @@ for i in {1..100}; do
   done
 done
 
+timestamp=$(date +"%Y-%m-%dT%T.%3NZ")
+resultJSON='
+{
+    "timestamp": "'"$timestamp"'",
+    "numberMsgsSent": "'"$msgSentCounter"'"
+}
+'
+echo $resultJSON | jq > $resultsOutputFile
+cat $resultsOutputFile | jq
 echo
 echo
 # The End.

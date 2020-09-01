@@ -23,13 +23,13 @@
 # SOFTWARE.
 # ---------------------------------------------------------------------------------------------
 
-clear
+autoRun=$1
+if [ -z "$autoRun" ]; then clear; fi
 
 #####################################################################################
 # settings
 #
-    scriptDir=$(pwd)
-
+    scriptDir=$(cd $(dirname "$0") && pwd);
     settingsFile="$scriptDir/settings.json"
     settings=$(cat $settingsFile | jq .)
       projectName=$( echo $settings | jq -r '.projectName' )
@@ -41,10 +41,17 @@ echo "# Project Name   : '$projectName'"
 echo "# Settings:"
 echo $settings | jq
 
-echo; read -n 1 -p "- Press key to continue, CTRL-C to exit ..." x; echo; echo
+if [ -z "$autoRun" ]; then
+  echo; read -n 1 -p "- Press key to continue, CTRL-C to exit ..." x; echo; echo
+fi
 
-source ./common.create.sh; cd $scriptDir
-source ./rdp2blob.create.sh; cd $scriptDir
+runScript="$scriptDir/common.create.sh $autoRun"; echo ">>> $runScript";
+  $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
+  cd $scriptDir
 
+runScript="$scriptDir/rdp2blob.create.sh $autoRun"; echo ">>> $runScript";
+  $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
+  cd $scriptDir
+  
 ###
 # The End.

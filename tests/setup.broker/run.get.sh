@@ -33,8 +33,9 @@ source ./.lib/run.project-env.sh
 ##############################################################################################################################
 # Settings
 
+    scriptDir=$(cd $(dirname "$0") && pwd);
     # logging & debug: ansible
-    ansibleLogFile="./tmp/ansible.log"
+    ansibleLogFile="$scriptDir/tmp/ansible.log"
     export ANSIBLE_LOG_PATH="$ansibleLogFile"
     export ANSIBLE_DEBUG=False
     export ANSIBLE_VERBOSITY=3
@@ -49,15 +50,15 @@ x=$(wait4Key)
 ##############################################################################################################################
 # Prepare
 
-mkdir ./tmp > /dev/null 2>&1
-mkdir ./deployed > /dev/null 2>&1
-rm -f ./tmp/*.*
+mkdir $scriptDir/tmp > /dev/null 2>&1
+mkdir $scriptDir/deployed > /dev/null 2>&1
+rm -f $scriptDir/tmp/*.*
 
 ##############################################################################################################################
 # Run
 
-brokerInventory=$(assertFile "./broker.inventory.yml") || exit
-playbook="./playbook.get.yml"
+brokerInventory=$(assertFile "$scriptDir/broker.inventory.yml") || exit
+playbook="$scriptDir/playbook.get.yml"
 
 # --step --check -vvv
 ansible-playbook \

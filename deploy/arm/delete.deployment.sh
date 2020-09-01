@@ -23,13 +23,13 @@
 # SOFTWARE.
 # ---------------------------------------------------------------------------------------------
 
-clear
+autoRun=$1
+if [ -z "$autoRun" ]; then clear; fi
 
 #####################################################################################
 # settings
 #
-    scriptDir=$(pwd)
-
+    scriptDir=$(cd $(dirname "$0") && pwd);
     settingsFile="$scriptDir/settings.json"
     settings=$(cat $settingsFile | jq .)
       projectName=$( echo $settings | jq -r '.projectName' )
@@ -41,11 +41,21 @@ echo "# Delete Project from Azure"
 echo "# Project Name   : '$projectName'"
 echo
 
+yes=""
+if [ ! -z "$autoRun" ]; then
+  yes="--yes -y"
+fi
+
 echo " >>> Deleting Resource Group ..."
-az group delete \
-  --name $resourceGroup \
-  --verbose
-if [[ $? != 0 ]]; then echo " >>> ERR: deleting resource group"; exit 1; fi
+  az group delete \
+    --name $resourceGroup \
+    --verbose \
+    $yes
+  code=$?
+  # echo "code=$code"
+  if [ -z "$autoRun" ]; then
+    if [[ $code != 0 ]]; then echo " >>> ERR: deleting resource group"; exit 1; fi
+  fi
 echo " >>> Success."
 
 

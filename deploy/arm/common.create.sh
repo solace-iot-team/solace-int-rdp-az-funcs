@@ -23,13 +23,13 @@
 # SOFTWARE.
 # ---------------------------------------------------------------------------------------------
 
-clear
+autoRun=$1
+if [ -z "$autoRun" ]; then clear; fi
 
 #####################################################################################
 # settings
 #
-    scriptDir=$(pwd)
-
+    scriptDir=$(cd $(dirname "$0") && pwd);
     settingsFile="$scriptDir/settings.json"
     settings=$(cat $settingsFile | jq .)
 
@@ -37,9 +37,9 @@ clear
         azLocation=$( echo $settings | jq -r '.azLocation' )
         resourceGroup=$projectName
 
-    templateFile="common.create.template.json"
-    parametersFile="common.create.parameters.json"
-    outputDir="./deployment"
+    templateFile="$scriptDir/common.create.template.json"
+    parametersFile="$scriptDir/common.create.parameters.json"
+    outputDir="$scriptDir/deployment"
     outputFile="common.create.output.json"
 
 echo

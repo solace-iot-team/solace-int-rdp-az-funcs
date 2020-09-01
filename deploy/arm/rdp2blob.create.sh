@@ -22,13 +22,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 # ---------------------------------------------------------------------------------------------
-clear
+autoRun=$1
+if [ -z "$autoRun" ]; then clear; fi
 
 #####################################################################################
 # settings
 #
-    scriptDir=$(pwd)
-
+    scriptDir=$(cd $(dirname "$0") && pwd);
     settingsFile="$scriptDir/settings.json"
     settings=$(cat $settingsFile | jq .)
 
@@ -47,7 +47,7 @@ clear
     zipDeployDir="$scriptDir/../zip-deploy"
     templateFile="rdp2blob.create.template.json"
     parametersFile="rdp2blob.create.parameters.json"
-    outputDir="./deployment"
+    outputDir="$scriptDir/deployment"
     outputFileCreateBlob="rdp2blob.create-blob.output.json"
     outputFileAddSettings="rdp2blob.add-settings.output.json"
     outputFileZipDeploy="rdp2blob.zip-deploy.output.json"
@@ -149,6 +149,7 @@ echo "# Output dir  : $outputDir"
 echo "# Output files:"
 cd $outputDir
 ls -la *.json
+cd $scriptDir
 echo
 echo
 ###

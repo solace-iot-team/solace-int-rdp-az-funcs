@@ -23,7 +23,9 @@
 # SOFTWARE.
 # ---------------------------------------------------------------------------------------------
 
-clear
+autoRun=$1
+if [ -z "$autoRun" ]; then clear; fi
+
 echo; echo "##############################################################################################################"
 echo "#"
 echo "# Script: "$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
@@ -31,40 +33,51 @@ echo "# Script: "$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 source ./.lib/run.project-env.sh
 if [[ $? != 0 ]]; then echo "ERR >>> aborting."; echo; exit 1; fi
 
-##############################################################################################################################
-# User chooses deployment
-rdpFunctionSettingsFile=$(chooseDeployment "./settings.*.yml")
-if [[ $? != 0 ]]; then echo "ERR >>> aborting."; echo; exit 1; fi
+scriptDir=$(cd $(dirname "$0") && pwd);
 
-echo; echo "# Settings: $rdpFunctionSettingsFile"
+##############################################################################################################################
+# User chooses deployment or as parameter
+if [ -z "$autoRun" ]; then
+  rdpFunctionSettingsFile=$(chooseDeployment "./settings.*.yml")
+  if [[ $? != 0 ]]; then echo "ERR >>> aborting."; echo; exit 1; fi
+else
+  rdpFunctionSettingsFile=$(assertFile "$autoRun") || exit
+fi
+
+echo "# Settings : $rdpFunctionSettingsFile"
+
 
 ##############################################################################################################################
 # Settings
-
+    scriptDir=$(cd $(dirname "$0") && pwd);
     # logging & debug: ansible
-    ansibleLogFile="./tmp/ansible.log"
+    ansibleLogFile="$scriptDir/tmp/ansible.log"
     export ANSIBLE_LOG_PATH="$ansibleLogFile"
     export ANSIBLE_DEBUG=False
     export ANSIBLE_VERBOSITY=3
     # logging: ansible-solace
-    export ANSIBLE_SOLACE_LOG_PATH="./tmp/ansible-solace.log"
+    export ANSIBLE_SOLACE_LOG_PATH="$scriptDir/tmp/ansible-solace.log"
     export ANSIBLE_SOLACE_ENABLE_LOGGING=True
 
-x=$(showEnv)
-x=$(wait4Key)
+    x=$(showEnv)
+
+    if [ -z "$autoRun" ]; then
+      x=$(wait4Key)
+    fi
+
 ##############################################################################################################################
 # Prepare
 
-mkdir ./tmp > /dev/null 2>&1
-mkdir ./deployed > /dev/null 2>&1
-rm -f ./tmp/*.*
-rm -f ./deployed/*
+mkdir $scriptDir/tmp > /dev/null 2>&1
+mkdir $scriptDir/deployed > /dev/null 2>&1
+rm -f $scriptDir/tmp/*.*
+rm -f $scriptDir/deployed/*
 
 ##############################################################################################################################
 # Run
 
-brokerInventory=$(assertFile "./broker.inventory.yml") || exit
-playbook="./playbook.create-rdp.yml"
+brokerInventory=$(assertFile "$scriptDir/broker.inventory.yml") || exit
+playbook="$scriptDir/playbook.create-rdp.yml"
 
 # --step --check -vvv
 ansible-playbook \
@@ -78,7 +91,7 @@ if [[ $? != 0 ]]; then echo ">>> ERROR ..."; echo; exit 1; fi
 # Copy Deployment Settings
 #
 
-cp $rdpFunctionSettingsFile ./deployed/settings.deployed.yml
+cp $rdpFunctionSettingsFile "$scriptDir/deployed/settings.deployed.yml"
 if [[ $? != 0 ]]; then echo ">>> ERROR ..."; echo; exit 1; fi
 
 echo; echo "##############################################################################################################"

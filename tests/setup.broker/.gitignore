@@ -2,4 +2,5 @@
 tmp
 deployed
 settings.az-func.yml
+.settings.az-func.json
 *.pem
