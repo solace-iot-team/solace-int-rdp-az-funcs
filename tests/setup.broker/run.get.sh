@@ -23,17 +23,20 @@
 # SOFTWARE.
 # ---------------------------------------------------------------------------------------------
 
-clear
+autoRun=$1
+if [ -z "$autoRun" ]; then clear; fi
+
 echo; echo "##############################################################################################################"
 echo "#"
 echo "# Script: "$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
-
-source ./.lib/run.project-env.sh
 
 ##############################################################################################################################
 # Settings
 
     scriptDir=$(cd $(dirname "$0") && pwd);
+    source $scriptDir/.lib/run.project-env.sh
+    if [[ $? != 0 ]]; then echo "ERR >>> aborting."; echo; exit 1; fi
+
     # logging & debug: ansible
     ansibleLogFile="$scriptDir/tmp/ansible.log"
     export ANSIBLE_LOG_PATH="$ansibleLogFile"
@@ -46,7 +49,9 @@ source ./.lib/run.project-env.sh
 
 
 x=$(showEnv)
-x=$(wait4Key)
+if [ -z "$autoRun" ]; then
+  x=$(wait4Key)
+fi
 ##############################################################################################################################
 # Prepare
 
@@ -69,9 +74,9 @@ if [[ $? != 0 ]]; then echo ">>> ERROR ..."; echo; exit 1; fi
 
 echo; echo "##############################################################################################################"
 echo; echo "deployed:"; echo;
-ls -la ./deployed/*
+ls -la $scriptDir/deployed/*
 echo; echo "tmp:"
-ls -la ./tmp/*.*
+ls -la $scriptDir/tmp/*.*
 echo; echo
 
 

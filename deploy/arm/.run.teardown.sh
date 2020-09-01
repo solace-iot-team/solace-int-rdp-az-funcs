@@ -24,41 +24,14 @@
 # ---------------------------------------------------------------------------------------------
 
 SCRIPT_PATH=$(cd $(dirname "$0") && pwd);
-source ./.lib/functions.sh
 
 ##############################################################################################################################
 # Settings
 
-  settingsTemplateFile=$(assertFile "$SCRIPT_PATH/.template.settings.az-func.json") || exit
-  settingsFile="$SCRIPT_PATH/.settings.az-func.json"
-  funcAppInfoFile=$(assertFile "$SCRIPT_PATH/../../deploy/arm/deployment/rdp2blob.func-app-info.output.json") || exit
-
 ##############################################################################################################################
 # Run
 
-runScript="$SCRIPT_PATH/stop.local.broker.sh auto"; echo ">>> $runScript";
-  $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
-
-runScript="$SCRIPT_PATH/start.local.broker.sh auto"; echo ">>> $runScript";
-  $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
-
-# download certificate
-certName="BaltimoreCyberTrustRoot.crt.pem"
-curl -L "https://cacerts.digicert.com/$certName" > $SCRIPT_PATH/$certName
-if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
-# create settings file
-funcAppInfoJSON=$(cat $funcAppInfoFile | jq)
-settingsJSON=$(cat $settingsTemplateFile | jq)
-export rdp2Blob_azFuncCode=$( echo $funcAppInfoJSON | jq -r '.functions."solace-rdp-2-blob".code' )
-settingsJSON=$(echo $settingsJSON | jq ".az_rdp_2_blob_func.az_func_code=env.rdp2Blob_azFuncCode")
-export rdp2Blob_azFuncHost=$( echo $funcAppInfoJSON | jq -r '.defaultHostName' )
-settingsJSON=$(echo $settingsJSON | jq ".az_rdp_2_blob_func.az_func_host=env.rdp2Blob_azFuncHost")
-echo $settingsJSON > $settingsFile
-
-runScript="$SCRIPT_PATH/run.create-rdp.sh $settingsFile"; echo ">>> $runScript";
-  $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
-
-runScript="$SCRIPT_PATH/run.get.sh auto"; echo ">>> $runScript";
+runScript="$SCRIPT_PATH/delete.deployment.sh auto"; echo ">>> $runScript";
   $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
 
 ###

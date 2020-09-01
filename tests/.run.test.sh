@@ -55,12 +55,24 @@ runScript="$SCRIPT_PATH/../deploy/arm/rdp2blob.count.sh $resultsOutputFile"; ech
   $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
 
 ##############################################################################################################################
-# Done
+# Teardown
+runScript="$SCRIPT_PATH/setup.broker/.run.teardown.sh"; echo ">>> $runScript";
+  $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
 
+runScript="$SCRIPT_PATH/../deploy/.run.teardown.sh"; echo ">>> $runScript";
+  $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
+
+##############################################################################################################################
+# Done
+echo;
+echo "##############################################################################################################"
+echo "# Results:"
+echo
 resultFiles=$(ls $resultsDir)
 for resultFile in $resultFiles; do
   cat "$resultsDir/$resultFile" | jq
 done
+
 
 
 ###

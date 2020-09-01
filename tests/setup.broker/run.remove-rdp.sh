@@ -23,19 +23,22 @@
 # SOFTWARE.
 # ---------------------------------------------------------------------------------------------
 
-clear
+autoRun=$1
+if [ -z "$autoRun" ]; then clear; fi
+
 echo; echo "##############################################################################################################"
 echo "#"
 echo "# Script: "$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
-
-source ./.lib/run.project-env.sh
 
 ##############################################################################################################################
 # Settings
 
     scriptDir=$(cd $(dirname "$0") && pwd);
+    source $scriptDir/.lib/run.project-env.sh
+    if [[ $? != 0 ]]; then echo "ERR >>> aborting."; echo; exit 1; fi
+
     # deployed rdp function settings
-    rdpFunctionSettingsDeployedFile=$(assertFile "./deployed/settings.deployed.yml") || exit
+    rdpFunctionSettingsDeployedFile=$(assertFile "$scriptDir/deployed/settings.deployed.yml") || exit
     export AS_SAMPLES_RDP_FUNCTION_SETTINGS_FILE=$rdpFunctionSettingsDeployedFile
 
     # logging & debug: ansible
@@ -48,7 +51,9 @@ source ./.lib/run.project-env.sh
     export ANSIBLE_SOLACE_ENABLE_LOGGING=True
 
 x=$(showEnv)
-x=$(wait4Key)
+if [ -z "$autoRun" ]; then
+  x=$(wait4Key)
+fi
 ##############################################################################################################################
 # Prepare
 
@@ -72,14 +77,14 @@ if [[ $? != 0 ]]; then echo ">>> ERROR ..."; echo; exit 1; fi
 ##############################################################################################################################
 # Delete Deployment Settings
 #
-rm -f ./deployed/*
+rm -f $scriptDir/deployed/*
 
 
 echo; echo "##############################################################################################################"
 echo; echo "deployed:"; echo;
-ls -la ./deployed/*
+ls -la $scriptDir/deployed/*
 echo; echo "tmp:"
-ls -la ./tmp/*.*
+ls -la $scriptDir/tmp/*.*
 echo; echo
 
 

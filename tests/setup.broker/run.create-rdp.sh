@@ -30,7 +30,8 @@ echo; echo "####################################################################
 echo "#"
 echo "# Script: "$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 
-source ./.lib/run.project-env.sh
+scriptDir=$(cd $(dirname "$0") && pwd);
+source $scriptDir/.lib/run.project-env.sh
 if [[ $? != 0 ]]; then echo "ERR >>> aborting."; echo; exit 1; fi
 
 scriptDir=$(cd $(dirname "$0") && pwd);
