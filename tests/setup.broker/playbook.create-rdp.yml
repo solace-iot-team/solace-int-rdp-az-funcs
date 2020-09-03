@@ -105,12 +105,12 @@
     # DEBUG
     # - meta: end_play
 
-    # - name: "Pause Until Broker available"
-    #   solace_get_available:
-    #   register: result
-    #   until: "result.rc==0 and result.is_available"
-    #   retries: 25 # 25 * 5 seconds
-    #   delay: 5 # Every 5 seconds
+    - name: "Pause Until Broker available"
+      solace_get_available:
+      register: result
+      until: "result.rc==0 and result.is_available"
+      retries: 25 # 25 * 5 seconds
+      delay: 5 # Every 5 seconds
 
     - include_vars:
         file: "{{ SETTINGS_FILE }}"

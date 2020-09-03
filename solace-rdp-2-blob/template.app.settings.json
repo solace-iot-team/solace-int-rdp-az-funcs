@@ -1,0 +1,5 @@
+{
+  "STORAGE_CONTAINER_NAME": "{dataLakeStorageContainerName}",
+  "STORAGE_PATH_PREFIX": "{dataLakeFixedPathPrefix}",
+  "STORAGE_CONNECTION_STRING": "{dataLakeStorageConnectionString}"
+}

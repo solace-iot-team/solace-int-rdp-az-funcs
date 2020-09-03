@@ -32,7 +32,7 @@ if [ -z "$autoRun" ]; then clear; fi
     scriptDir=$(cd $(dirname "$0") && pwd);
     srcDir="$scriptDir/.."
     tmpDir="$scriptDir/tmp"
-    zipDeployDir="$scriptDir/zip-deploy"
+    zipDeployRootDir="$scriptDir/zip-deploy"
     functions=(
       "solace-rdp-2-blob"
     )
@@ -47,10 +47,11 @@ echo "##########################################################################
 echo "# Build zip file(s) to deploy to Azure"
 echo "# Sources        : '$srcDir'"
 echo "# Functions      : '${functions[@]}'"
-echo "# Zip-deploy dir : $zipDeployDir"
+echo "# Zip-deploy dir : $zipDeployRootDir"
 
 #####################################################################################
 # get the version
+# the version is the same across all functions
 #
 packageVersion=$(node -p -e "require('$srcDir/package.json').version")
 if [[ $? != 0 ]]; then echo " >>> ERR: get package version via node binary"; exit 1; fi
@@ -63,9 +64,9 @@ fi
 # Prepare Dirs
 mkdir $tmpDir > /dev/null 2>&1
 rm -rf $tmpDir/*
-mkdir $zipDeployDir > /dev/null 2>&1
-rm -rf $zipDeployDir/*
-zipDeployTmp=$zipDeployDir/tmp
+mkdir $zipDeployRootDir > /dev/null 2>&1
+rm -rf $zipDeployRootDir/*
+zipDeployTmp=$zipDeployRootDir/tmp
 mkdir $zipDeployTmp
 
 #####################################################################################
@@ -108,11 +109,16 @@ for function in ${functions[@]}; do
   cp ./package.json $zipDeployTmp
   cp ./package-lock.json $zipDeployTmp
   cp ./proxies.json $zipDeployTmp
+  # create the function dir
+  zipDeployDir="$zipDeployRootDir/$function.v$packageVersion"
+  mkdir $zipDeployDir
   # create the zip file
   cd $zipDeployTmp
   zip -r "$zipDeployDir/$function.v$packageVersion.zip" * > /dev/null 2>&1
-
+  # copy the rest of the files
+  cp "$tmpDir/$function/template.app.settings.json" $zipDeployDir
 done
+
 #####################################################################################
 # Cleanup
 
@@ -120,10 +126,10 @@ rm -rf $tmpDir
 rm -rf $zipDeployTmp
 
 echo "##########################################################################################"
-echo "# Packages dir  : $zipDeployDir"
+echo "# Packages dir  : $zipDeployRootDir"
 echo "# Packages built:"
-cd $zipDeployDir
-ls -la *.zip
+cd $zipDeployRootDir
+ls -la */*.*
 echo
 echo
 

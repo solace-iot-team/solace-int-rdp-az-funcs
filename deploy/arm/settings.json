@@ -6,6 +6,7 @@
         "functionName":"solace-rdp-2-blob",
         "dataLakeStorageContainerName": "rdp2blob",
         "dataLakeFixedPathPrefix": "fixed/path/prefix",
-        "zipDeployFile": "solace-rdp-2-blob.v0.1.0.zip"
+        "zipDeploySourceDir": "solace-rdp-2-blob.v0.1.0",
+        "zipDeployZipFile": "solace-rdp-2-blob.v0.1.0.zip"
     }
 }
