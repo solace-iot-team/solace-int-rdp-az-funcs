@@ -92,7 +92,7 @@ npm install --production > /dev/null 2>&1
 #####################################################################################
 # Build zip files
 for function in ${functions[@]}; do
-  echo " >>> Function: $function"; echo
+  echo " >>> Function: $function"
   cd $tmpDir
   rm -rf $zipDeployTmp/*
   # specific function files
@@ -117,8 +117,9 @@ for function in ${functions[@]}; do
   zip -r "$zipDeployDir/$function.v$packageVersion.zip" * > /dev/null 2>&1
   # copy the rest of the files
   cp "$tmpDir/$function/template.app.settings.json" $zipDeployDir
+  echo " >>> done."
 done
-
+echo
 #####################################################################################
 # Cleanup
 
