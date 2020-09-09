@@ -34,8 +34,6 @@ scriptDir=$(cd $(dirname "$0") && pwd);
 source $scriptDir/.lib/run.project-env.sh
 if [[ $? != 0 ]]; then echo "ERR >>> aborting."; echo; exit 1; fi
 
-scriptDir=$(cd $(dirname "$0") && pwd);
-
 ##############################################################################################################################
 # User chooses deployment or as parameter
 if [ -z "$autoRun" ]; then

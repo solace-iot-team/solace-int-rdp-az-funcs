@@ -1,6 +1,6 @@
 {
   "name": "solace-int-rdp-az-funcs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "solace integration: rdp to azure functions",
   "homepage": "https://github.com/solace-iot-team/solace-int-rdp-az-funcs",
   "repository": {

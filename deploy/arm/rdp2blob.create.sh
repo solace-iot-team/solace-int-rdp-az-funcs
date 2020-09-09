@@ -41,9 +41,6 @@ if [ -z "$autoRun" ]; then clear; fi
         functionName=$( echo $settings | jq -r '."'$functionElement'".functionName' )
         dataLakeStorageContainerName=$( echo $settings | jq -r '."'$functionElement'".dataLakeStorageContainerName' )
         dataLakeFixedPathPrefix=$( echo $settings | jq -r '."'$functionElement'".dataLakeFixedPathPrefix' )
-        zipDeploySourceDir=$( echo $settings | jq -r '."'$functionElement'".zipDeploySourceDir' )
-        zipDeployZipFile=$( echo $settings | jq -r '."'$functionElement'".zipDeployZipFile' )
-
 
     zipDeployRootDir="$scriptDir/../zip-deploy"
     templateFile="rdp2blob.create.template.json"
@@ -53,6 +50,10 @@ if [ -z "$autoRun" ]; then clear; fi
     outputFileAddSettings="rdp2blob.add-settings.output.json"
     outputFileZipDeploy="rdp2blob.zip-deploy.output.json"
     outputFileFuncAppInfo="rdp2blob.func-app-info.output.json"
+
+    # read the deployment
+    zipDeploySourceDir=$(cd $zipDeployRootDir; ls -d $functionName*/ | cut -f1 -d'/')
+    zipDeployZipFile=$( cd $zipDeployRootDir/$zipDeploySourceDir; ls *.zip )
 
 echo
 echo "##########################################################################################"
@@ -127,8 +128,7 @@ echo " >>> Success."
 #####################################################################################
 # Deploy Function
 
-zipDeployFile="$zipDeployRootDir/$zipDeploySourceDir/$zipDeployZipFile"
-
+zipDeployFile=$(assertFile "$zipDeployRootDir/$zipDeploySourceDir/$zipDeployZipFile") || exit
 echo " >>> Deploying Function: $zipDeployFile ..."
   az functionapp deployment source config-zip \
       --resource-group $resourceGroup \
@@ -148,9 +148,10 @@ echo " >>> Retrieving Function Info ..."
   if [[ $? != 0 ]]; then echo ">>> ERR: retrieving function app info."; exit 1; fi
 echo " >>> Success."
 
+echo "rdpAppInfo:"; echo $rdpAppInfo | jq
+
 echo " >>> Retrieving Function Keys ..."
   rdpAppInfoId=$(echo $rdpAppInfo | jq -r '.id')
-  # echo "rdpAppInfoId='$rdpAppInfoId'"
   rdpAppkeys=$(az rest --method post --uri $rdpAppInfoId/functions/$functionName/listKeys?api-version=2018-11-01)
   if [[ $? != 0 ]]; then echo ">>> ERR: retrieving function keys."; exit 1; fi
   # echo $rdpAppkeys | jq .

@@ -23,7 +23,6 @@ az functionapp config appsettings set --name <myFunctionApp> \
 --settings AzureWebJobs.QueueTrigger.Disabled=false
 ````
 
-
 ## Pre-Requisites
 
 * bash
@@ -34,7 +33,7 @@ az functionapp config appsettings set --name <myFunctionApp> \
 ````bash
 az login
 
-az account set --subscription YOUR-SUBSCRIPTION-NAME-OR-ID
+az account set --subscription {YOUR-SUBSCRIPTION-NAME-OR-ID}
 ````
 
 ## Configure General Settings
@@ -48,11 +47,11 @@ vi settings.json
 ````bash
 vi parameters.json
     # update the parameters
-````    
+````
 
 ## Deploy
 ````bash
-./deploy.sh
+./create.deployment.sh
 
 ````
 
