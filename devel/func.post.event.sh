@@ -44,8 +44,8 @@ dataTypeId_2="stream-metrics-2"
 
 topics=(
   "$domain/$assetTypeId/$assetId/$regionId/$dataTypeId_0"
-  "$domain/$assetTypeId/$assetId/$regionId/$dataTypeId_1"
-  "$domain/$assetTypeId/$assetId/$regionId/$dataTypeId_2"
+  # "$domain/$assetTypeId/$assetId/$regionId/$dataTypeId_1"
+  # "$domain/$assetTypeId/$assetId/$regionId/$dataTypeId_2"
 )
 
 for topic in ${topics[@]}; do

@@ -4,6 +4,22 @@
 
 import { ConfigError, InternalFunctionError } from "./Errors"
 
+// type is always string
+export class ArgItem {
+    name: string;
+    isRequired: boolean = true;
+    defaultValue: string = null;
+    choices: string[];
+    type: string = "string";
+    constructor(name: string, isRequired: boolean = true, defaultValue: string = null, choices: string[] = null) {
+        this.name = name;
+        this.isRequired = isRequired;
+        this.defaultValue = defaultValue;
+        this.choices = choices;
+    }
+}
+export type ArgSpec = Array<ArgItem>;
+
 /**
  * Manages mandatory function arguments from a given source, such 
  * as 'process.env' and 'req.query'. 
@@ -39,12 +55,26 @@ export class FunctionArgs {
     * const queryParams = new FunctionArgs('query-params', req.query, queryParamKeys);
     * ```
     */
-    constructor(sourceName: string, source: {[k: string]: string}, argKeys: string[]) {
+    // constructor(sourceName: string, source: {[k: string]: string}, argSpec: ArgSpec) {
+    //     this.sourceName = sourceName;
+    //     if (!argKeys || argKeys.length === 0) { throw new InternalFunctionError('no argKeys specified'); }
+    //     for (let key of argKeys) {
+    //         let v = source[key];
+    //         if(v === undefined) { throw new ConfigError(`${sourceName} '${key}' not found. required: ${JSON.stringify(argKeys)}`); }
+    //         this.args[key] = v;
+    //     }        
+    // }
+    constructor(sourceName: string, source: {[k: string]: string}, argSpec: ArgSpec) {
         this.sourceName = sourceName;
-        if (!argKeys || argKeys.length === 0) { throw new InternalFunctionError('no argKeys specified'); }
-        for (let key of argKeys) {
-            let v = source[key];
-            if(v === undefined) { throw new ConfigError(`${sourceName} '${key}' not found. required: ${JSON.stringify(argKeys)}`); }
+        if (!argSpec || argSpec.length === 0) { throw new InternalFunctionError('no argSpec specified'); }
+        for (let argItem of argSpec) {
+            let key = argItem.name;
+            let v = source[key];            
+            if(v === undefined) {
+                if(argItem.isRequired) { throw new ConfigError(`${sourceName} '${key}' not found. spec: ${JSON.stringify(argSpec)}`); }
+                v = argItem.defaultValue;
+            }
+            if(argItem.choices !== null && argItem.choices.indexOf(v) === -1) { throw new ConfigError(`${sourceName} '${key}' has invalid value of '${v}'. choices: ${JSON.stringify(argItem.choices)}`); }
             this.args[key] = v;
         }        
     }

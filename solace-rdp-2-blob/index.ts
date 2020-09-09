@@ -15,46 +15,45 @@ TODO: TESTS
 
     https://github.com/Testy/TestyTs
 
-TODO: FunctionArgs:
-    - like Ansible: argSpec:
-    type=string // always
-    required=true/false,
-    default=""
-    options: ["a", "b"]
-    ==> make pathCompose="None" the default
-    Document (how) the function
-    - perhaps add validation of container name?
-        - https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata
-
-TODO: Restructure:
-    - project = app
-    - multiple functions
-    - package: just one function
-        - needs local.settings.json per function.
-    - solace-rdp-lib ==> just lib
-
 */
 
 
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import { BlobServiceClient } from "@azure/storage-blob" 
 import { generateUuid, RestError } from "@azure/core-http"
-import { FunctionArgs } from "../solace-rdp-lib/FunctionArgs"
+import { FunctionArgs, ArgItem, ArgSpec } from "../solace-rdp-lib/FunctionArgs"
 import { ConfigError } from "../solace-rdp-lib/Errors"
 
-function composeBlobName(functionSettings: FunctionArgs, queryParams: FunctionArgs): string {
+function composeBlobName(appSettings: FunctionArgs, queryParams: FunctionArgs): string {
 
-    if (queryParams.getArg('pathCompose') === 'withTime') {
+    if (queryParams.getArg(queryParamPathCompose) === pathComposeWithTime) {
         let timeStamp = new Date();
         let month: string = String(timeStamp.getUTCMonth() + 1).padStart(2, '0');
         let day: string = String(timeStamp.getUTCDate()).padStart(2, '0');
         let hours: string = String(timeStamp.getUTCHours() + 1).padStart(2, '0');
         let minutes: string = String(timeStamp.getUTCMinutes()).padStart(2, '0');
         let seconds: string = String(timeStamp.getUTCSeconds()).padStart(2, '0');
-        return `${functionSettings.getArg('STORAGE_PATH_PREFIX')}/${queryParams.getArg('path')}/${timeStamp.getUTCFullYear()}/${month}/${day}/${hours}/${minutes}/${seconds}_${generateUuid()}`
+        return `${appSettings.getArg(appSettingStoragePathPrefix)}/${queryParams.getArg(queryParamPath)}/${timeStamp.getUTCFullYear()}/${month}/${day}/${hours}/${minutes}/${seconds}_${generateUuid()}`
     }
-    return `${functionSettings.getArg('STORAGE_PATH_PREFIX')}/${queryParams.getArg('path')}/${generateUuid()}`
+    return `${appSettings.getArg(appSettingStoragePathPrefix)}/${queryParams.getArg(queryParamPath)}/${generateUuid()}`
 }
+
+const appSettingStorageConnectionString: string = "Rdp2BlobStorageConnectionString";
+const appSettingStoragePathPrefix: string = "Rdp2BlobStoragePathPrefix";
+const appSettingStorageContainerName: string = "Rdp2BlobStorageContainerName";
+const appSettingsSpec: ArgSpec = [
+    new ArgItem("choiceSetting", true, null, ["choice1", "choice2"]),
+    new ArgItem(appSettingStorageConnectionString),
+    new ArgItem(appSettingStoragePathPrefix),
+    new ArgItem(appSettingStorageContainerName)
+]
+const queryParamPath: string = "path";
+const queryParamPathCompose: string = "pathCompose";
+const pathComposeWithTime: string = "withTime";
+const queryParamsSpec: ArgSpec = [
+    new ArgItem(queryParamPath),
+    new ArgItem(queryParamPathCompose, false, "none", ["none", pathComposeWithTime])
+]
 
 /**
  * https://www.npmjs.com/package/@azure/storage-blob
@@ -68,19 +67,19 @@ const solaceRDP2Blob: AzureFunction = async function (context: Context, req: Htt
     context.log.info(`[INFO] - STARTING: ${context.executionContext.functionName} ...`);
     context.log.info(`[INFO] - req=${JSON.stringify(req, null, 2)}`);
 
+    context.log.info(`[INFO] - appSettingsSpec=${JSON.stringify(appSettingsSpec)}`)
+    context.log.info(`[INFO] - queryParamsSpec=${JSON.stringify(queryParamsSpec)}`)
+
     try {
-        const settingKeys: string[] = ['STORAGE_PATH_PREFIX', 'STORAGE_CONNECTION_STRING', 'STORAGE_CONTAINER_NAME'];
-        const functionSettings = new FunctionArgs('app-settings', process.env, settingKeys);
-        const queryParamKeys: string[] = ['path', 'pathCompose'];
-        const queryParams = new FunctionArgs('query-params', req.query, queryParamKeys);
-        
-        context.log.info(`[INFO] - settings=${functionSettings.toString()}`);
+        const appSettings = new FunctionArgs('app-settings', process.env, appSettingsSpec);
+        const queryParams = new FunctionArgs('query-params', req.query, queryParamsSpec);
+        context.log.info(`[INFO] - settings=${appSettings.toString()}`);
         context.log.info(`[INFO] - queryParams=${queryParams.toString()}`);
 
-        const blobServiceClient = BlobServiceClient.fromConnectionString(functionSettings.getArg('STORAGE_CONNECTION_STRING'));
-        const containerName = functionSettings.getArg('STORAGE_CONTAINER_NAME');
+        const blobServiceClient = BlobServiceClient.fromConnectionString(appSettings.getArg(appSettingStorageConnectionString));
+        const containerName = appSettings.getArg(appSettingStorageContainerName);
         const containerClient = blobServiceClient.getContainerClient(containerName);
-        const blobName = composeBlobName(functionSettings, queryParams);
+        const blobName = composeBlobName(appSettings, queryParams);
         const blockBlobClient = containerClient.getBlockBlobClient(blobName);
         const content = req.rawBody;
         if ( content === undefined || content.length === 0) {
