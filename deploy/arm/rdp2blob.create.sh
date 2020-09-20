@@ -82,13 +82,13 @@ rm -f $outputDir/$outputFileFuncAppInfo
     templateAppSettingsFile=$(assertFile "$zipDeployDir/template.app.settings.json") || exit
     templateAppSettingsJSON=$(cat $templateAppSettingsFile | jq)
       if [[ $? != 0 ]]; then echo " >>> ERR: file not found: $templateAppSettingsFile."; exit 1; fi
-    jsonPath=".STORAGE_CONTAINER_NAME"
+    jsonPath=".Rdp2BlobStorageContainerName"
       val=$(echo $templateAppSettingsJSON | jq -r $jsonPath)
       if [ "$val" == "null" ]; then echo ">>> ERR: reading $jsonPath from $templateAppSettingsFile"; echo; exit 1; fi
-    jsonPath=".STORAGE_PATH_PREFIX"
+    jsonPath=".Rdp2BlobStoragePathPrefix"
       val=$(echo $templateAppSettingsJSON | jq -r $jsonPath)
       if [ "$val" == "null" ]; then echo ">>> ERR: reading $jsonPath from $templateAppSettingsFile"; echo; exit 1; fi
-    jsonPath=".STORAGE_CONNECTION_STRING"
+    jsonPath=".Rdp2BlobStorageConnectionString"
       val=$(echo $templateAppSettingsJSON | jq -r $jsonPath)
       if [ "$val" == "null" ]; then echo ">>> ERR: reading $jsonPath from $templateAppSettingsFile"; echo; exit 1; fi
 
@@ -97,9 +97,9 @@ echo " >>> Adding Function App Setttings ..."
     --name $functionAppAccountName \
     --resource-group $resourceGroup \
     --settings \
-      "STORAGE_CONTAINER_NAME=$dataLakeStorageContainerName" \
-      "STORAGE_PATH_PREFIX=$dataLakeFixedPathPrefix" \
-      "STORAGE_CONNECTION_STRING=$dataLakeStorageConnectionString" \
+      "Rdp2BlobStorageContainerName=$dataLakeStorageContainerName" \
+      "Rdp2BlobStoragePathPrefix=$dataLakeFixedPathPrefix" \
+      "Rdp2BlobStorageConnectionString=$dataLakeStorageConnectionString" \
       --verbose \
       > "$outputDir/$outputFileAddSettings"
 

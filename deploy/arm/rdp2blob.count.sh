@@ -21,9 +21,9 @@ if [ -z "$autoRun" ]; then clear; fi
 # run
 #
   funcAppInfoJSON=$(cat $funcAppInfoFile | jq)
-  dlConnectionString=$( echo $funcAppInfoJSON | jq -r '.[] | select(.name == "STORAGE_CONNECTION_STRING").value' )
-  dlContainerName=$( echo $funcAppInfoJSON | jq -r '.[] | select(.name == "STORAGE_CONTAINER_NAME").value' )
-  dlPathPrefix=$( echo $funcAppInfoJSON | jq -r '.[] | select(.name == "STORAGE_PATH_PREFIX").value' )
+  dlConnectionString=$( echo $funcAppInfoJSON | jq -r '.[] | select(.name == "Rdp2BlobStorageConnectionString").value' )
+  dlContainerName=$( echo $funcAppInfoJSON | jq -r '.[] | select(.name == "Rdp2BlobStorageContainerName").value' )
+  dlPathPrefix=$( echo $funcAppInfoJSON | jq -r '.[] | select(.name == "Rdp2BlobStoragePathPrefix").value' )
 
 echo " >>> Retrieving blob file list ..."
   az storage blob list  --container-name $dlContainerName \
