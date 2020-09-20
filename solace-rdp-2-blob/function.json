@@ -16,5 +16,5 @@
     }
   ],
   "scriptFile": "../dist/solace-rdp-2-blob/index.js",
-  "disabled": false
+  "entryPoint" : "solaceRDP2Blob"
 }

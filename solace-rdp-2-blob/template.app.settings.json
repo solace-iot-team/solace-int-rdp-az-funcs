@@ -1,5 +1,5 @@
 {
-  "STORAGE_CONTAINER_NAME": "{dataLakeStorageContainerName}",
-  "STORAGE_PATH_PREFIX": "{dataLakeFixedPathPrefix}",
-  "STORAGE_CONNECTION_STRING": "{dataLakeStorageConnectionString}"
+  "Rdp2BlobStorageContainerName": "{dataLakeStorageContainerName}",
+  "Rdp2BlobStoragePathPrefix": "{dataLakeFixedPathPrefix}",
+  "Rdp2BlobStorageConnectionString": "{dataLakeStorageConnectionString}"
 }

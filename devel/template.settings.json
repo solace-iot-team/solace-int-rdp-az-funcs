@@ -3,7 +3,7 @@
     "resourceGroupName": "solace-int-rdp-az-funcs-rg",
     "azLocation": "UK South",
     "solace-rdp-2-blob": {
-          "dataLakeAccountName": "solaceintdl",
-          "sku": "Standard_LRS"
+        "dataLakeAccountName": "solaceintdl",
+        "sku": "Standard_LRS"
     }
 }
