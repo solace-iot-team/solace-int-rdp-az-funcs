@@ -12,7 +12,7 @@ if [ -z "$autoRun" ]; then clear; fi
   scriptDir=$(cd $(dirname "$0") && pwd);
   scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
   projectHome=${scriptDir%%/deploy/*}
-  deploymentDir="$projectHome/.deployment"
+  deploymentDir="$projectHome/.deployment/mtests"
 
   funcAppInfoFile="$deploymentDir/rdp2blob.add-settings.output.json"
   outputDir="$deploymentDir"

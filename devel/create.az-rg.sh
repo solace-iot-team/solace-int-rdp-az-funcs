@@ -1,17 +1,22 @@
 #!/bin/bash
+# ---------------------------------------------------------------------------------------------
 # Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke (ricardo.gomez-ulmke@solace.com).
 # All rights reserved.
 # Licensed under the MIT License.
+# ---------------------------------------------------------------------------------------------
 
 clear
 
 #####################################################################################
 # settings
 #
-    scriptDir=$(cd $(dirname "$0") && pwd);
-    settingsFile="$scriptDir/settings.json"
-    deploymentDir="$scriptDir/deployment"
 
+    scriptDir=$(cd $(dirname "$0") && pwd);
+    scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
+    projectHome=${scriptDir%%/devel}
+    deploymentDir="$projectHome/.deployment/devel"
+
+    settingsFile="$scriptDir/settings.json"
 
 #####################################################################################
 # read settings from file
@@ -32,7 +37,6 @@ echo
 
 #####################################################################################
 # Prepare Dirs
-mkdir $deploymentDir > /dev/null 2>&1
 
 #####################################################################################
 # Resource Group

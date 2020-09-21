@@ -11,7 +11,7 @@
   scriptDir=$(cd $(dirname "$0") && pwd);
   scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
   projectHome=${scriptDir%%/mtests/*}
-  deploymentDir="$projectHome/.deployment"
+  deploymentDir="$projectHome/.deployment/mtests"
 
   source ./.lib/functions.sh
 

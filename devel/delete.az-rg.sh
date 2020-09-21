@@ -1,16 +1,21 @@
 #!/bin/bash
+# ---------------------------------------------------------------------------------------------
 # Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke (ricardo.gomez-ulmke@solace.com).
 # All rights reserved.
 # Licensed under the MIT License.
+# ---------------------------------------------------------------------------------------------
 
 clear
-scriptDir=$(cd $(dirname "$0") && pwd);
-source $scriptDir/.lib/functions.sh; if [[ $? != 0 ]]; then echo " >>> ERR: sourcing functions.sh."; exit 1; fi
 
 #####################################################################################
 # settings
 #
-    deploymentDir="$scriptDir/deployment"
+    scriptDir=$(cd $(dirname "$0") && pwd);
+    source $scriptDir/.lib/functions.sh; if [[ $? != 0 ]]; then echo " >>> ERR: sourcing functions.sh."; exit 1; fi
+    scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
+    projectHome=${scriptDir%%/devel}
+    deploymentDir="$projectHome/.deployment/devel"
+
     createAzRgFile=$(assertFile "$deploymentDir/create.az-rg.json") || exit
 
 #####################################################################################
@@ -37,6 +42,10 @@ echo " >>> Deleting Resource Group ..."
 if [[ $? != 0 ]]; then echo " >>> ERR: deleting resource group"; exit 1; fi
 echo " >>> Success."
 
+#####################################################################################
+# Cleanup deployment
+rm -rf $deploymentDir/*.json
+
 echo "##########################################################################################"
 echo "# Deployment dir: $deploymentDir"
 echo "# Output files:"
@@ -45,9 +54,6 @@ ls -la *.json
 echo
 echo
 
-#####################################################################################
-# Cleanup deployment
-rm -rf $deploymentDir/*
 
 ###
 # The End.
