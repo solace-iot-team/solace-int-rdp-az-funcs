@@ -10,9 +10,13 @@ if [ -z "$autoRun" ]; then clear; fi
 # settings
 #
     scriptDir=$(cd $(dirname "$0") && pwd);
+    scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
+    projectHome=${scriptDir%%/deploy/*}
+
     settingsFile="$scriptDir/settings.json"
     settings=$(cat $settingsFile | jq .)
       projectName=$( echo $settings | jq -r '.projectName' )
+
 
 echo
 echo "##########################################################################################"
@@ -32,6 +36,6 @@ runScript="$scriptDir/common.create.sh $autoRun"; echo ">>> $runScript";
 runScript="$scriptDir/rdp2blob.create.sh $autoRun"; echo ">>> $runScript";
   $runScript; if [[ $? != 0 ]]; then echo ">>> ERR:$runScript"; echo; exit 1; fi
   cd $scriptDir
-  
+
 ###
 # The End.

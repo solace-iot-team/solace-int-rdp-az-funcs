@@ -10,8 +10,12 @@ if [ -z "$autoRun" ]; then clear; fi
 # settings
 #
   scriptDir=$(cd $(dirname "$0") && pwd);
-  funcAppInfoFile="$scriptDir/deployment/rdp2blob.add-settings.output.json"
-  outputDir="$scriptDir/deployment"
+  scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
+  projectHome=${scriptDir%%/deploy/*}
+  deploymentDir="$projectHome/.deployment"
+
+  funcAppInfoFile="$deploymentDir/rdp2blob.add-settings.output.json"
+  outputDir="$deploymentDir"
   outputFile="$outputDir/rdp2blob.count.output.json"
   if [ ! -z "$autoRun" ]; then
     countResultOutputFile=$autoRun

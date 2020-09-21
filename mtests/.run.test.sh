@@ -1,7 +1,9 @@
 #!/bin/bash
+# ---------------------------------------------------------------------------------------------
 # Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke (ricardo.gomez-ulmke@solace.com).
 # All rights reserved.
 # Licensed under the MIT License.
+# ---------------------------------------------------------------------------------------------
 
 SCRIPT_PATH=$(cd $(dirname "$0") && pwd);
 source "./.lib/functions.sh"

@@ -1,26 +1,8 @@
 #!/bin/bash
 # ---------------------------------------------------------------------------------------------
-# MIT License
-#
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke (ricardo.gomez-ulmke@solace.com)
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke (ricardo.gomez-ulmke@solace.com).
+# All rights reserved.
+# Licensed under the MIT License.
 # ---------------------------------------------------------------------------------------------
 
 autoRun=$1
@@ -37,18 +19,16 @@ echo "# Script: "$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
     source $scriptDir/.lib/run.project-env.sh
     if [[ $? != 0 ]]; then echo "ERR >>> aborting."; echo; exit 1; fi
 
-    # deployed rdp function settings
-    rdpFunctionSettingsDeployedFile=$(assertFile "$scriptDir/deployed/settings.deployed.yml") || exit
-    export AS_SAMPLES_RDP_FUNCTION_SETTINGS_FILE=$rdpFunctionSettingsDeployedFile
-
     # logging & debug: ansible
-    ansibleLogFile="./tmp/ansible.log"
+    ansibleLogFile="$scriptDir/tmp/ansible.log"
     export ANSIBLE_LOG_PATH="$ansibleLogFile"
     export ANSIBLE_DEBUG=False
     export ANSIBLE_VERBOSITY=3
     # logging: ansible-solace
     export ANSIBLE_SOLACE_LOG_PATH="./tmp/ansible-solace.log"
     export ANSIBLE_SOLACE_ENABLE_LOGGING=True
+  # END SELECT
+
 
 x=$(showEnv)
 if [ -z "$autoRun" ]; then
@@ -58,27 +38,21 @@ fi
 # Prepare
 
 mkdir $scriptDir/tmp > /dev/null 2>&1
+mkdir $scriptDir/deployed > /dev/null 2>&1
 rm -f $scriptDir/tmp/*.*
 
 ##############################################################################################################################
 # Run
-# select inventory
+
 brokerInventory=$(assertFile "$scriptDir/broker.inventory.yml") || exit
-playbook="$scriptDir/playbook.remove-rdp.yml"
+playbook="$scriptDir/playbook.get.yml"
 
 # --step --check -vvv
 ansible-playbook \
                   -i $brokerInventory \
-                  $playbook \
-                  --extra-vars "SETTINGS_FILE=$AS_SAMPLES_RDP_FUNCTION_SETTINGS_FILE"
+                  $playbook
 
 if [[ $? != 0 ]]; then echo ">>> ERROR ..."; echo; exit 1; fi
-
-##############################################################################################################################
-# Delete Deployment Settings
-#
-rm -f $scriptDir/deployed/*
-
 
 echo; echo "##############################################################################################################"
 echo; echo "deployed:"; echo;

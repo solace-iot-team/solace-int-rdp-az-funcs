@@ -8,8 +8,14 @@ if [ -z "$autoRun" ]; then clear; fi
 #####################################################################################
 # settings
 #
+
     scriptDir=$(cd $(dirname "$0") && pwd);
+    scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
+    projectHome=${scriptDir%%/deploy/*}
+    deploymentDir="$projectHome/.deployment"
+
     source $scriptDir/.lib/functions.sh; if [[ $? != 0 ]]; then echo " >>> ERR: sourcing functions.sh."; exit 1; fi
+
     settingsFile="$scriptDir/settings.json"
     settings=$(cat $settingsFile | jq .)
 
@@ -26,7 +32,7 @@ if [ -z "$autoRun" ]; then clear; fi
     zipDeployRootDir="$scriptDir/../zip-deploy"
     templateFile="rdp2blob.create.template.json"
     parametersFile="rdp2blob.create.parameters.json"
-    outputDir="$scriptDir/deployment"
+    outputDir="$deploymentDir"
     outputFileCreateBlob="rdp2blob.create-blob.output.json"
     outputFileAddSettings="rdp2blob.add-settings.output.json"
     outputFileZipDeploy="rdp2blob.zip-deploy.output.json"

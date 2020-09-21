@@ -9,7 +9,12 @@ if [ -z "$autoRun" ]; then clear; fi
 #####################################################################################
 # settings
 #
+
     scriptDir=$(cd $(dirname "$0") && pwd);
+    scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
+    projectHome=${scriptDir%%/deploy/*}
+    deploymentDir="$projectHome/.deployment"
+
     settingsFile="$scriptDir/settings.json"
     settings=$(cat $settingsFile | jq .)
 
@@ -19,7 +24,7 @@ if [ -z "$autoRun" ]; then clear; fi
 
     templateFile="$scriptDir/common.create.template.json"
     parametersFile="$scriptDir/common.create.parameters.json"
-    outputDir="$scriptDir/deployment"
+    outputDir="$deploymentDir"
     outputFile="common.create.output.json"
 
 echo
@@ -34,7 +39,7 @@ echo
 #####################################################################################
 # Prepare Dirs
 mkdir $outputDir > /dev/null 2>&1
-rm -f $outputDir/*
+rm -f $outputDir/*.json
 
 #####################################################################################
 # Resource Group

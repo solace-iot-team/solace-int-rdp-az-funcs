@@ -1,7 +1,7 @@
 {
-    "projectName": "solace-int-rdp-az-funcs",
+    "projectName": "mtests-solace-int-rdp-az-funcs",
     "azLocation": "UK South",
-    "functionAppAccountName": "solace-int-rdp-az-funcs-fa",
+    "functionAppAccountName": "mtests-solace-int-rdp-az-funcs-fa",
     "rdp2blobFunction": {
         "functionName":"solace-rdp-2-blob",
         "dataLakeStorageContainerName": "rdp2blob",

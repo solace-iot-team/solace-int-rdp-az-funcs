@@ -9,8 +9,12 @@ if [ -z "$autoRun" ]; then clear; fi
 #####################################################################################
 # settings
 #
+
     scriptDir=$(cd $(dirname "$0") && pwd);
-    deploymentDir="$scriptDir/deployment"
+    scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
+    projectHome=${scriptDir%%/deploy/*}
+    deploymentDir="$projectHome/.deployment"
+
     settingsFile="$scriptDir/settings.json"
     settings=$(cat $settingsFile | jq .)
       projectName=$( echo $settings | jq -r '.projectName' )
@@ -39,7 +43,7 @@ echo " >>> Deleting Resource Group ..."
   fi
 echo " >>> Success."
 
-rm -f $deploymentDir/*
+rm -f $deploymentDir/*.json
 
 ###
 # The End.
