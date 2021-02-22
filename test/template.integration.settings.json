@@ -1,0 +1,19 @@
+{
+  "solace-rdp-2-blob": {
+    "azure": {
+      "function_code": "{function-code}",
+      "function_host": "{function-app}.azurewebsites.net",
+      "function_port": 443,
+      "function_route": "api/solace-rdp-2-blob"
+    },
+    "broker": {
+      "rdp_settings": {
+        "tls_enabled": true,
+        "trusted_common_name": "*.azurewebsites.net",
+        "outgoing_connection_count": 1,
+        "max_response_wait_time_secs": 60,
+        "connection_retry_delay_secs": 5
+      }
+    }
+  }
+}

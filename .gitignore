@@ -1,6 +1,7 @@
 azure-functions-core-tools
 local.settings.json
 .DS_Store
+tmp
 
 
 # Logs

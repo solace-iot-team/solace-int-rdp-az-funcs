@@ -1,6 +1,6 @@
 {
   "name": "solace-int-rdp-az-funcs",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "solace integration: rdp to azure functions",
   "homepage": "https://github.com/solace-iot-team/solace-int-rdp-az-funcs",
   "repository": {
@@ -30,8 +30,9 @@
     "watch": "tsc -w",
     "prestart": "npm run build",
     "start": "func start",
+    "unit-test": "mocha -r ts-node/register ./**/index.spec.ts",
     "test": "mocha -r ts-node/register ./**/*.spec.ts",
-    "testx": "mocha -r ts-node/register ./**/solace-rdp-2-blob/index.integration.spec.ts"
+    "integration-test": "mocha -r ts-node/register ./**/index.integration.spec.ts"
   },
   "dependencies": {
     "@azure/storage-blob": "^12.2.1"
