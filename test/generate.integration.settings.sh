@@ -13,6 +13,7 @@ source $SOLACE_INTEGRATION_PROJECT_HOME/.lib/functions.sh
 ############################################################################################################################
 # Settings
 
+  localSettingsFile=$(assertFile $scriptName "$SOLACE_INTEGRATION_PROJECT_HOME/local.settings.json") || exit
   templateSettingsFile=$(assertFile $scriptName "$SOLACE_INTEGRATION_PROJECT_HOME/test/template.integration.settings.json") || exit
   outSettingsFile="$WORKING_DIR/integration.settings.json"
 
@@ -28,6 +29,11 @@ source $SOLACE_INTEGRATION_PROJECT_HOME/.lib/functions.sh
 echo " >>> Creating integration.settings.json ..."
 
   export functionAppHost=$(cat $functionAppInfoFile | jq -r '.defaultHostName')
+  # read the local settings
+  localSettings=$(cat $localSettingsFile | jq .)
+  export connectionString=$(echo $localSettings | jq -r '.Values.Rdp2BlobStorageConnectionString')
+  export containerName=$(echo $localSettings | jq -r '.Values.Rdp2BlobStorageContainerName')
+  export pathPrefix=$(echo $localSettings | jq -r '.Values.Rdp2BlobStoragePathPrefix')
 
   for function in ${functions[@]}; do
     echo " function:$function ..."
@@ -37,12 +43,13 @@ echo " >>> Creating integration.settings.json ..."
       secretsFile=$(assertFile $scriptName "$WORKING_DIR/azure/function.$functionAppName.$function.secrets.json") || exit
       export functionCode=$(cat $secretsFile | jq -r '.default')
 
-      echo "functionAppHost=$functionAppHost"
-      echo "functionCode=$functionCode"
-
       integrationSettings=$(cat $templateSettingsFile | jq .)
-      integrationSettings=$(echo $integrationSettings | jq '."'$function'".azure.function_code=env.functionCode')
-      integrationSettings=$(echo $integrationSettings | jq '."'$function'".azure.function_host=env.functionAppHost')
+      integrationSettings=$(echo $integrationSettings | jq '."'$function'".azure.function.code=env.functionCode')
+      integrationSettings=$(echo $integrationSettings | jq '."'$function'".azure.function.host=env.functionAppHost')
+      integrationSettings=$(echo $integrationSettings | jq '."'$function'".azure.storage.connection_string=env.connectionString')
+      integrationSettings=$(echo $integrationSettings | jq '."'$function'".azure.storage.container_name=env.containerName')
+      integrationSettings=$(echo $integrationSettings | jq '."'$function'".azure.storage.path_prefix=env.pathPrefix')
+
       echo $integrationSettings | jq . > $outSettingsFile
 
     else

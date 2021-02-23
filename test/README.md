@@ -49,7 +49,10 @@ post-events-to-func.sh
 (check azure blob container)
 ````
 
-TODO: must be able to post events from mocha?
+## Unit Test
+````bash
+run.npm.unit-tests.sh
+````
 
 ## Integration Test
 
@@ -57,6 +60,11 @@ TODO: must be able to post events from mocha?
 ````bash
 az login
 ````
+**Run All Tests Below:**
+````bash
+run.sh
+````
+
 **Azure Blob Storage:**
 ````bash
 azure/create.az.blob-storage.sh
@@ -105,14 +113,10 @@ generate.integration.settings.sh
 $WORKiNG_DIR/integration.settings.json
 ````
 
-
-TODO: **npm integration test**
-
-- with tmp/integration.settings.sh
-- post messages
-- count blobs
-- success or fail
-
+**Run Integration Tests:**
+````bash
+run.npm.integration-tests.sh
+````
 
 ---
 ## Delete Azure Resources

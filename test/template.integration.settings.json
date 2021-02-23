@@ -1,10 +1,17 @@
 {
   "solace-rdp-2-blob": {
     "azure": {
-      "function_code": "{function-code}",
-      "function_host": "{function-app}.azurewebsites.net",
-      "function_port": 443,
-      "function_route": "api/solace-rdp-2-blob"
+      "function": {
+        "code": "{function-code}",
+        "host": "{function-app}.azurewebsites.net",
+        "port": 443,
+        "route": "api/solace-rdp-2-blob"
+      },
+      "storage": {
+        "connection_string": "{connection-string}",
+        "container_name": "{container-name}",
+        "path_prefix": "{path-prefix}"
+      }
     },
     "broker": {
       "rdp_settings": {

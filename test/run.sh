@@ -19,21 +19,23 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 # Prepare
 
   mkdir -p $LOG_DIR; rm -rf $LOG_DIR/*
-  mkdir -p $WORKING_DIR; rm -rf $WORKING_DIR/*
+  mkdir -p $WORKING_DIR;
+  # rm -rf $WORKING_DIR/*
 
 ############################################################################################################################
 # Scripts
 
 testScripts=(
-  # "azure/delete.az.resources.sh"
-  "azure/create.az.blob-storage.sh"
-  "generate.local.settings.sh"
-  "azure/create.az.function-resources.sh"
-  "release/build.release-packages.sh"
-  "azure/deploy.az.functions.sh"
-  "generate.integration.settings.sh"
-  # "npm integration-tests"
-  # "azure/delete.az.resources.sh"
+  # "run.npm.unit-tests.sh"
+  # # "azure/delete.az.resources.sh"
+  # "azure/create.az.blob-storage.sh"
+  # "generate.local.settings.sh"
+  # "azure/create.az.function-resources.sh"
+  # "release/build.release-packages.sh"
+  # "azure/deploy.az.functions.sh"
+  # "generate.integration.settings.sh"
+  "run.npm.integration-tests.sh"
+  # # "azure/delete.az.resources.sh"
 )
 
 ############################################################################################################################
@@ -63,8 +65,9 @@ testScripts=(
 
 filePattern="$LOG_DIR"
 errors=$(grep -n -r -e "ERROR" $filePattern )
+npm_errors=$(grep -n -r -e "failing" $filePattern )
 
-if [[ -z "$errors" && "$FAILED" -eq 0 ]]; then
+if [[ -z "$errors" && -z "$npm_errors" && "$FAILED" -eq 0 ]]; then
   echo ">>> FINISHED:SUCCESS - $scriptName"
   touch "$LOG_DIR/$scriptName.SUCCESS.out"
 else
@@ -73,6 +76,11 @@ else
     while IFS= read line; do
       echo $line >> "$LOG_DIR/$scriptName.ERROR.out"
     done < <(printf '%s\n' "$errors")
+  fi
+  if [ ! -z "$npm_errors" ]; then
+    while IFS= read line; do
+      echo $line >> "$LOG_DIR/$scriptName.ERROR.out"
+    done < <(printf '%s\n' "$npm_errors")
   fi
   exit 1
 fi

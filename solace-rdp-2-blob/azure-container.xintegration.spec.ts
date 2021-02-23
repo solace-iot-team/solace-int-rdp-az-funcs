@@ -11,10 +11,12 @@ import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 chai.use(sinonChai);
 import rewire = require("rewire");
+import path = require("path");
 
 import { Context, Logger } from "@azure/functions";
 import { BlobDownloadResponseModel, BlobServiceClient, BlockBlobClient, ContainerClient } from "@azure/storage-blob" 
 import { solaceRDP2Blob } from "./index";
+import { pathToFileURL } from "url";
 
 let sandbox: sinon.SinonSandbox;
 
@@ -34,7 +36,37 @@ async function streamToString(readableStream: NodeJS.ReadableStream) {
     });
 }
 
-describe('solace-rdp-2-blob: az container integration tests', () => {
+
+// - with tmp/integration.settings.sh
+// - post messages
+// - count blobs
+// - success or fail
+
+
+// https://stackoverflow.com/questions/55565636/how-to-read-a-file-before-runing-a-set-of-mocha-test
+// describe('test1', function () {
+//     var inputs = null;
+  
+//     before('test1', function (done) {
+//       fs.readFile('./inputs.txt', 'utf8', (err, data) => {
+//         if (err) throw err;
+//         inputs = new Map(eval(data));
+//         done();
+//       });
+//     });
+  
+//     describe('is_null_input()', function () {
+//       it('should return a json string', function () {
+//         const is_null_input = inputs.get('is_null_input');
+//         expect(is_null_input).to.equal(true);  // Success!
+//         // ...
+//         // var json_result = scrapper_cheerio.is_null_json(is_null_input);
+//         // console.log('these are json results', json_result);
+//         // assert.isObject(json_result, 'is json object');
+//       });
+//     });
+
+describe('solace-rdp-2-blob: integration tests', () => {
 
     let functionContextStub: Partial<Context>;  
     const index = rewire('./index');
@@ -42,6 +74,32 @@ describe('solace-rdp-2-blob: az container integration tests', () => {
     const appSettingStorageContainerName = index.__get__("appSettingStorageContainerName");
     const appSettingStoragePathPrefix = index.__get__("appSettingStoragePathPrefix");
 
+    let TEST_ENV = {
+        WORKING_DIR: (process.env['WORKING_DIR'] === undefined) ? null : process.env['WORKING_DIR'],
+        SOLACE_INTEGRATION_PROJECT_HOME: (process.env['SOLACE_INTEGRATION_PROJECT_HOME'] === undefined) ? null : process.env['SOLACE_INTEGRATION_PROJECT_HOME'],
+        SCRIPT_NAME: path.basename(__filename),
+        INTEGRATION_SETTINGS_FILE: null as string,
+        FUNCTION_NAME: 'solace-rdp-2-blob'
+    } 
+    let integrationSettings: object = null
+
+    before(()=>{
+        if (TEST_ENV.SOLACE_INTEGRATION_PROJECT_HOME == null) {
+            console.error(`>>> ERROR: ${TEST_ENV.SCRIPT_NAME} - missing env var: SOLACE_INTEGRATION_PROJECT_HOME`);
+            process.exit(1)
+        }
+        if (TEST_ENV.WORKING_DIR == null) {
+            TEST_ENV.WORKING_DIR = TEST_ENV.SOLACE_INTEGRATION_PROJECT_HOME + "/tmp";
+        }
+        TEST_ENV.INTEGRATION_SETTINGS_FILE = TEST_ENV.WORKING_DIR + "/integration.settings.json";
+        // console.log(`>>> TEST_ENV = ${JSON.stringify(TEST_ENV, null, 2)}`)
+        integrationSettings = require(TEST_ENV.INTEGRATION_SETTINGS_FILE);
+        // console.log(`>>> integrationSettings = ${JSON.stringify(integrationSettings, null, 2)}`)
+        // set the env for the function
+        process.env[appSettingStorageConnectionString] = "DefaultEndpointsProtocol=https;AccountName=solaceintdl;AccountKey=64+Zer/eDahL2/oLjNnLOXpjS/nIJ7/PYjNguNxGHRZwl1RvRS7gwZC+sqYyDJZ9G9NfOqNT0LdBht/olzawAQ==;EndpointSuffix=core.windows.net";
+        process.env[appSettingStorageContainerName] = "mocha";
+        process.env[appSettingStoragePathPrefix] = "prefix";
+    }); 
     beforeEach(()=>{
         sandbox = sinon.createSandbox();
         let loggerStub: Partial<Logger>;
@@ -63,9 +121,10 @@ describe('solace-rdp-2-blob: az container integration tests', () => {
         sandbox.restore();
     });
 
-    context("solace-rdp-2-blob: integration with az container", ()=>{
+    context("solace-rdp-2-blob: integration", ()=>{
 
         // TODO: how to get the connection string?
+        // read local.settings.json ==> it's in there
         process.env[appSettingStorageConnectionString] = "DefaultEndpointsProtocol=https;AccountName=solaceintdl;AccountKey=64+Zer/eDahL2/oLjNnLOXpjS/nIJ7/PYjNguNxGHRZwl1RvRS7gwZC+sqYyDJZ9G9NfOqNT0LdBht/olzawAQ==;EndpointSuffix=core.windows.net";
         process.env[appSettingStorageContainerName] = "mocha";
         process.env[appSettingStoragePathPrefix] = "prefix";
