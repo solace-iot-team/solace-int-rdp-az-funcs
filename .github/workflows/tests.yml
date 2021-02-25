@@ -41,6 +41,11 @@ jobs:
         if: ${{ always() && steps.auth.outputs.IS_AUTHORIZED == 'false' }}
         uses: andymckay/cancel-action@0.2
 
+      - name: Checkout Current Branch
+        uses: actions/checkout@master
+        with:
+          ref: ${{ github.ref }}
+
       - name: env before install
         if: env.DEBUG_FLAG == 'true'
         run: |
@@ -85,11 +90,6 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
-
-      - name: Checkout Current Branch
-        uses: actions/checkout@master
-        with:
-          ref: ${{ github.ref }}
 
       - name: Run Tests
         run: |
