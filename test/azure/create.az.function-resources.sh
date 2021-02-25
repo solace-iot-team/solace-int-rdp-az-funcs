@@ -12,7 +12,10 @@ source $SOLACE_INTEGRATION_PROJECT_HOME/.lib/functions.sh
   if [ -z "$LOG_DIR" ]; then export LOG_DIR="$WORKING_DIR/logs"; mkdir -p $LOG_DIR; fi
   if [ -z "$SOLACE_INTEGRATION_AZURE_PROJECT_NAME" ]; then echo ">>> ERROR: - $scriptName - missing env var: SOLACE_INTEGRATION_AZURE_PROJECT_NAME"; exit 1; fi
   if [ -z "$SOLACE_INTEGRATION_AZURE_LOCATION" ]; then echo ">>> ERROR: - $scriptName - missing env var: SOLACE_INTEGRATION_AZURE_LOCATION"; exit 1; fi
-
+  if [ -z "$FUNCTION_APP_STORAGE_ACCOUNT_NAME" ]; then
+    randomNum=$((1 + $RANDOM % 10000))
+    export FUNCTION_APP_STORAGE_ACCOUNT_NAME="solacefastorage$randomNum"
+  fi
 ############################################################################################################################
 # Settings
 
@@ -24,7 +27,7 @@ source $SOLACE_INTEGRATION_PROJECT_HOME/.lib/functions.sh
 
 resourceGroupName="$SOLACE_INTEGRATION_AZURE_PROJECT_NAME-rg"
 azLocation="$SOLACE_INTEGRATION_AZURE_LOCATION"
-functionAppStorageAccountName="solacerdpfuncappstorage"
+functionAppStorageAccountName="$FUNCTION_APP_STORAGE_ACCOUNT_NAME"
 functionAppServicePlanName="$SOLACE_INTEGRATION_AZURE_PROJECT_NAME-sp"
 functionAppName="$SOLACE_INTEGRATION_AZURE_PROJECT_NAME"
 sku="Standard_LRS"
