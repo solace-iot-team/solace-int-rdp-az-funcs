@@ -10,7 +10,7 @@
 
 
 ````bash
-az ad sp create-for-rbac --name "wft-azperf" --sdk-auth
+az ad sp create-for-rbac --name "solace-int-rdp-az-funcs" --sdk-auth
 
 # make a note of the output, similar to this:
 {
@@ -31,6 +31,12 @@ az ad sp create-for-rbac --name "wft-azperf" --sdk-auth
 #### Github Secrets
 
   - AZURE_CREDENTIALS = {copy service principal output}
+
+
+------------------------------------------
+
+
+
   - AZURE_SUBSCRIPTION_ID = {subscription-id}
   - AZURE_TENANT_ID = {tenant-id}
   - AZURE_CLIENT_ID = {client-id}

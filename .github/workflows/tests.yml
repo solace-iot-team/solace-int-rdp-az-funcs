@@ -27,10 +27,6 @@ jobs:
   run_tests:
     runs-on: ubuntu-18.04
     steps:
-      - run: |
-          echo "hello world"
-
-
       - name: Check Auth
         if: github.event_name == 'workflow_dispatch' && github.actor != 'ricardojosegomezulmke'
         run: |
@@ -45,6 +41,12 @@ jobs:
         if: env.DEBUG_FLAG == 'true'
         run: |
           env | grep TEST
+
+      - name: Azure Login
+        # https://github.com/marketplace/actions/azure-login
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
 
 
       # - name: Print test env
