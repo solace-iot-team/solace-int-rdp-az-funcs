@@ -65,7 +65,7 @@ echo " >>> Deploying function ..."
 
     echo " >>> retrieving function secrets ..."
       code=1; tries=0
-      while [[ $code -gt 0 && $tries -lt 10 ]]; do
+      while [[ $code -gt 0 && $tries -lt 20 ]]; do
         ((tries++))
         functionAppInfo=$(cat $outputFunctionAppShowFile | jq .)
         appId=$(echo $functionAppInfo | jq -r '.id')
@@ -77,8 +77,8 @@ echo " >>> Deploying function ..."
           > $outputFunctionSecretsFile
         code=$?
         if [[ $code != 0 ]]; then
-          echo "code=$code && tries=$tries, sleep 2m"
-          sleep 2m;
+          echo "code=$code && tries=$tries, sleep 1m"
+          sleep 1m;
         fi
       done
       if [[ $code != 0 ]]; then echo " >>> ERROR: retrieving function secrets: $functionAppName.$function"; exit 1; fi

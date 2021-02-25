@@ -27,8 +27,7 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 # Scripts
 
 testScripts=(
-  # "run.npm.unit-tests.sh"
-  "azure/delete.az.resources.sh"
+  "run.npm.unit-tests.sh"
   "azure/create.az.blob-storage.sh"
   "generate.local.settings.sh"
   "azure/create.az.function-resources.sh"
