@@ -21,7 +21,10 @@ on:
 
 env:
   DEBUG_FLAG: ${{ true }}
-  TEST_HOME: "test"
+  TEST_SOLACE_INTEGRATION_AZURE_LOCATION: "West Europe"
+  TEST_TEST_RUNNER_SCRIPT: "test/run.sh"
+  TEST_TEST_RUNNER_LOGS_DIR: "tmp/logs"
+  TEST_OUTPUT_LOGS_NAME: "test-logs"
 
 jobs:
   run_tests:
@@ -62,6 +65,7 @@ jobs:
           pip install xmltodict
           pip install docker-compose
           ansible-galaxy collection install solace.pubsub_plus
+          npm install
 
       - name: env after install
         if: env.DEBUG_FLAG == 'true'
@@ -75,17 +79,37 @@ jobs:
           echo "ansible-galaxy --version: "; ansible-galaxy --version
           echo "ansible-solace version::"; ansible-galaxy collection list | grep solace
 
-      # - name: Azure Login
-      #   # https://github.com/marketplace/actions/azure-login
-      #   uses: azure/login@v1
-      #   with:
-      #     creds: ${{secrets.AZURE_CREDENTIALS}}
+      - name: Azure Login
+        # https://github.com/marketplace/actions/azure-login
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
 
+      - name: Checkout Current Branch
+        uses: actions/checkout@master
+        with:
+          ref: ${{ github.ref }}
 
+      - name: Run Tests
+        run: |
+          export SOLACE_INTEGRATION_AZURE_PROJECT_NAME="$GITHUB_WORKSPACE"
+          export SOLACE_INTEGRATION_AZURE_LOCATION="${TEST_SOLACE_INTEGRATION_AZURE_LOCATION}"
+          ./${TEST_TEST_RUNNER_SCRIPT}
 
+  # if [ -z "$SOLACE_INTEGRATION_AZURE_PROJECT_NAME" ]; then echo ">>> ERROR: - $scriptName - missing env var: SOLACE_INTEGRATION_AZURE_PROJECT_NAME"; exit 1; fi
+  # if [ -z "$SOLACE_INTEGRATION_AZURE_LOCATION" ]; then echo ">>> ERROR: - $scriptName - missing env var: SOLACE_INTEGRATION_AZURE_LOCATION"; exit 1; fi
+  # if [ -z "$WORKING_DIR" ]; then export WORKING_DIR="$SOLACE_INTEGRATION_PROJECT_HOME/tmp"; mkdir -p $WORKING_DIR; fi
+  # if [ -z "$LOG_DIR" ]; then export LOG_DIR="$WORKING_DIR/logs"; mkdir -p $LOG_DIR; fi
 
+    # export PROJECT_HOME="$GITHUB_WORKSPACE"
 
-
+      - name: Archive logs
+        if: ${{ (failure() && !cancelled()) || (always() && github.event_name == 'workflow_dispatch') }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.TEST_OUTPUT_LOGS_NAME }}
+          path: ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_LOGS_DIR }}
+          if-no-files-found: error
 
       # - name: Print test env
       #   if: env.DEBUG_FLAG == 'true'
