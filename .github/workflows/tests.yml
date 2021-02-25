@@ -44,7 +44,7 @@ jobs:
           echo "node --version: "; node --version
           echo "npm --version: "; npm --version
           echo "python3 --version: "; python3 --version
-          echo "pip --version: "; pip --version
+          echo "python3 -m pip --version: "; python3 -m pip --version
           echo "jq --version: "; jq --version
           echo "environment: TEST_* "
           env | grep TEST
@@ -52,12 +52,12 @@ jobs:
       - name: install components
         run: |
           sudo apt install python3-pip
-          sudo python -m pip install --upgrade pip
-          sudo pip install ansible
-          sudo pip install requests
-          sudo pip install xmltodict
-          sudo pip install docker-compose
-          ansible-galaxy collection install solace.pubsub_plus
+          sudo python3 -m pip install --upgrade pip
+          sudo -H python3 -m pip install ansible
+          # sudo pip install requests
+          # sudo pip install xmltodict
+          # sudo pip install docker-compose
+          # ansible-galaxy collection install solace.pubsub_plus
 
       - name: env after install
         if: env.DEBUG_FLAG == 'true'
@@ -66,9 +66,10 @@ jobs:
           echo "node --version: "; node --version
           echo "npm --version: "; npm --version
           echo "python3 --version: "; python3 --version
-          echo "pip --version: "; pip --version
+          echo "python3 -m pip --version: "; python3 -m pip --version
           echo "jq --version: "; jq --version
           echo "ansible --version: "; ansible --version
+          echo "ansible-galaxy --version: "; ansible-galaxy --version
           echo "ansible-solace version::"; ansible-galaxy collection list | grep solace
 
       # - name: Azure Login
