@@ -37,7 +37,7 @@ jobs:
         if: ${{ always() && steps.auth.outputs.IS_AUTHORIZED == 'false' }}
         uses: andymckay/cancel-action@0.2
 
-      - name: Print test env
+      - name: env before install
         if: env.DEBUG_FLAG == 'true'
         run: |
           echo "pre-installed versions"
@@ -50,11 +50,30 @@ jobs:
           echo "environment: TEST_* "
           env | grep TEST
 
-      - name: Azure Login
-        # https://github.com/marketplace/actions/azure-login
-        uses: azure/login@v1
-        with:
-          creds: ${{secrets.AZURE_CREDENTIALS}}
+      - name: install components
+        run: |
+          sudo apt install python3-pip
+          sudo python -m pip install --upgrade pip
+
+      - name: env after install
+        if: env.DEBUG_FLAG == 'true'
+        run: |
+          echo "pre-installed versions"
+          echo "bash --version: "; bash --version
+          echo "node --version: "; node --version
+          echo "npm --version: "; npm --version
+          echo "python3 --version: "; python3 --version
+          echo "pip --version: "; pip --version
+          echo "jq --version: "; jq --version
+          echo "environment: TEST_* "
+          env | grep TEST
+
+      # - name: Azure Login
+      #   # https://github.com/marketplace/actions/azure-login
+      #   uses: azure/login@v1
+      #   with:
+      #     creds: ${{secrets.AZURE_CREDENTIALS}}
+
 
       - name: check installed versions
         if: env.DEBUG_FLAG == 'true'
