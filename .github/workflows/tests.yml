@@ -41,10 +41,12 @@ jobs:
         if: env.DEBUG_FLAG == 'true'
         run: |
           echo "pre-installed versions"
-          node --version
-          npm --version
-          python3 --version
-          jq --version
+          echo "bash --version: "; bash --version
+          echo "node --version: "; node --version
+          echo "npm --version: "; npm --version
+          echo "python3 --version: "; python3 --version
+          echo "pip --version: "; pip --version
+          echo "jq --version: "; jq --version
           echo "environment: TEST_* "
           env | grep TEST
 
