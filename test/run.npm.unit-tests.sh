@@ -3,7 +3,7 @@
 scriptDir=$(cd $(dirname "$0") && pwd);
 scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 
-runScript="npm run unit-test"
+runScript="npm run unit-tests"
   if [[ "$RUN_FG" == "false" ]]; then
     logFile="$LOG_DIR/$scriptName.out"; mkdir -p "$(dirname "$logFile")";
     $runScript > $logFile 2>&1

@@ -1,0 +1,86 @@
+
+-
+  name: "Run Test"
+  hosts: all
+  gather_facts: no
+  any_errors_fatal: true
+  collections:
+    - solace.pubsub_plus
+  module_defaults:
+    solace_get_rdp_rest_consumers:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ vpn }}"
+  vars:
+    project_name: "solace-rdp-2-blob"
+    post_messages_script: "post-events-to-broker.sh"
+    result_file_name: "post-events-to-broker.result.json"
+  tasks:
+    - name: check input
+      set_fact:
+        project_home: "{{ SOLACE_INTEGRATION_PROJECT_HOME }}"
+        log_dir: "{{ LOG_DIR }}"
+        working_dir: "{{ WORKING_DIR }}"
+        result_file: "{{ WORKING_DIR }}/{{ result_file_name }}"
+        integration_settings_file: "{{ INTEGRATION_SETTINGS_FILE }}"
+
+    - name: load integration settings
+      include_vars:
+        file: "{{ integration_settings_file }}"
+        name: integration_settings
+
+    - name: extract parts of integration settings
+      set_fact:
+        settings_broker_rdp: "{{ integration_settings[project_name].broker.rdp_settings }}"
+    - set_fact:
+        settings_rdp_retry_delay: "{{ settings_broker_rdp.connection_retry_delay_secs }}"
+
+
+    - name: before test - check rdp consumer stats
+      solace_get_rdp_rest_consumers:
+        api: monitor
+        rdp_name: "{{ project_name }}"
+      register: result
+    - set_fact:
+        # before_httpRequestTxMsgCount: "{{ result.result_list[0].data.httpRequestTxMsgCount }}"
+        # before_httpResponseErrorRxMsgCount: "{{ result.result_list[0].data.httpResponseErrorRxMsgCount }}"
+        # before_httpResponseRxMsgCount: "{{ result.result_list[0].data.httpResponseRxMsgCount }}"
+        before_httpResponseSuccessRxMsgCount: "{{ result.result_list[0].data.counter.httpResponseSuccessRxMsgCount }}"
+
+    - name: send messages
+      command: "{{ project_home }}/test/{{ post_messages_script }}"
+
+    - name: load result file
+      include_vars:
+        file: "{{ result_file }}"
+        name: post_result
+    - set_fact:
+        num_messages_sent: "{{ post_result.numberMsgsSent }}"
+
+    - name: after test - check rdp consumer stats
+      solace_get_rdp_rest_consumers:
+        api: monitor
+        rdp_name: "{{ project_name }}"
+      register: result
+      # until: result.result_list[0].data.httpRequestTxMsgCount|int == (before_httpRequestTxMsgCount|int + num_messages_sent|int)
+      until: result.result_list[0].data.counter.httpResponseSuccessRxMsgCount|int == (before_httpResponseSuccessRxMsgCount|int + num_messages_sent|int)
+      retries: 10
+      delay: "{{ settings_rdp_retry_delay|int + 3 }}"
+    - set_fact:
+        # after_httpRequestTxMsgCount: "{{ result.result_list[0].data.httpRequestTxMsgCount }}"
+        # after_httpResponseErrorRxMsgCount: "{{ result.result_list[0].data.httpResponseErrorRxMsgCount }}"
+        # after_httpResponseRxMsgCount: "{{ result.result_list[0].data.httpResponseRxMsgCount }}"
+        after_httpResponseSuccessRxMsgCount: "{{ result.result_list[0].data.counter.httpResponseSuccessRxMsgCount }}"
+
+    - name: check messages transmitted and error count
+      assert:
+        that:
+          - after_httpResponseSuccessRxMsgCount|int == (before_httpResponseSuccessRxMsgCount|int + num_messages_sent|int)
+
+
+###
+# The End.

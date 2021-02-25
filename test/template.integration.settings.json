@@ -8,6 +8,7 @@
         "route": "api/solace-rdp-2-blob"
       },
       "storage": {
+        "account_name": "{account-name}",
         "connection_string": "{connection-string}",
         "container_name": "{container-name}",
         "path_prefix": "{path-prefix}"

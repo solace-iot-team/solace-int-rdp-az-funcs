@@ -24,11 +24,6 @@ let sandbox: sinon.SinonSandbox;
 
 describe('solace-rdp-2-blob: the function', () => {
 
-    // https://github.com/Azure-Samples/azure-functions-unit-testing-mocha
-    // start function and post events to function?
-    // run tests automatically
-    // https://docs.microsoft.com/en-us/azure/azure-functions/functions-test-a-function#javascript-in-vs-code
-
     let functionContextStub: Partial<Context>;  
     const index = rewire('./index');
     const appSettingStorageConnectionString = index.__get__("appSettingStorageConnectionString");
@@ -67,7 +62,7 @@ describe('solace-rdp-2-blob: the function', () => {
             expect(functionContextStub.log.error).to.have.been.calledWithMatch(appSettingStorageConnectionString);
             expect(functionContextStub.res.status).to.equal(400);
         });
-        it("should validate app setting path prefix", async()=>{
+        it("should validate app setting path prefix - missing", async()=>{
             process.env[appSettingStorageConnectionString] = "connection-string";
             process.env[appSettingStorageContainerName] = "container-name";
             delete process.env[appSettingStoragePathPrefix];
@@ -79,6 +74,20 @@ describe('solace-rdp-2-blob: the function', () => {
             expect(functionContextStub.log.error).to.have.been.calledOnce;
             expect(functionContextStub.log.error).to.have.been.calledWithMatch("ConfigError");
             expect(functionContextStub.log.error).to.have.been.calledWithMatch(appSettingStoragePathPrefix);
+            expect(functionContextStub.res.status).to.equal(400);
+        });
+        it("should validate app setting path prefix - empty", async()=>{
+            process.env[appSettingStorageConnectionString] = "connection-string";
+            process.env[appSettingStorageContainerName] = "container-name";
+            process.env[appSettingStoragePathPrefix] = "";
+            const request = {
+                query: { path: "path" }
+            }
+            await solaceRDP2Blob(<Context>functionContextStub, request);
+            expect(functionContextStub.log.error).to.have.been.calledOnce;
+            expect(functionContextStub.log.error).to.have.been.calledWithMatch("ConfigError");
+            expect(functionContextStub.log.error).to.have.been.calledWithMatch(appSettingStoragePathPrefix);
+            expect(functionContextStub.log.error).to.have.been.calledWithMatch("is empty");
             expect(functionContextStub.res.status).to.equal(400);
         });
         it("should validate query param path", async()=>{
@@ -158,7 +167,6 @@ describe('solace-rdp-2-blob: the function', () => {
                 let restError = new RestError("message", "404", 404);
                 restError.details={errorCode: "ContainerNotFound"};
                 throw restError;
-                // return {} as Promise<BlockBlobUploadResponse>;
             } 
             let orgUpload = BlockBlobClient.prototype.upload;
             BlockBlobClient.prototype.upload = uploadMock;

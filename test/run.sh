@@ -27,15 +27,18 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 
 testScripts=(
   # "run.npm.unit-tests.sh"
-  # # "azure/delete.az.resources.sh"
-  # "azure/create.az.blob-storage.sh"
-  # "generate.local.settings.sh"
-  # "azure/create.az.function-resources.sh"
-  # "release/build.release-packages.sh"
-  # "azure/deploy.az.functions.sh"
-  # "generate.integration.settings.sh"
+  "azure/delete.az.resources.sh"
+  "azure/create.az.blob-storage.sh"
+  "generate.local.settings.sh"
+  "azure/create.az.function-resources.sh"
+  "release/build.release-packages.sh"
+  "azure/deploy.az.functions.sh"
+  "generate.integration.settings.sh"
   "run.npm.integration-tests.sh"
-  # # "azure/delete.az.resources.sh"
+  "solace-broker/setup.sh"
+  "solace-broker/run-test.sh"
+  "solace-broker/teardown.sh"
+  "azure/delete.az.resources.sh"
 )
 
 ############################################################################################################################

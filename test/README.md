@@ -5,6 +5,7 @@
 * Azure CLI
 * bash
 * [jq](https://stedolan.github.io/jq/download/)
+* [Solace PubSub+ Ansible Collection](https://solace-iot-team.github.io/ansible-solace-collection/installation.html)
 
 ````bash
 # list available Azure locations
@@ -44,14 +45,14 @@ npm start
 
 (visual studio code => start/debug)
 
-post-events-to-func.sh
+./post-events-to-func.sh
 
 (check azure blob container)
 ````
 
 ## Unit Test
 ````bash
-run.npm.unit-tests.sh
+./run.npm.unit-tests.sh
 ````
 
 ## Integration Test
@@ -60,11 +61,15 @@ run.npm.unit-tests.sh
 ````bash
 az login
 ````
-**Run All Tests Below:**
+### Run All Integration Tests
 ````bash
-run.sh
+./run.sh
+# outputs as per description below
+# log files:
+$WORKING_DIR/logs
 ````
 
+### Step by Step
 **Azure Blob Storage:**
 ````bash
 azure/create.az.blob-storage.sh
@@ -108,18 +113,45 @@ $WORKiNG_DIR/azure/function.{functionapp-name}.{function}.secrets.json
 
 **Generate Integration Settings:**
 ````bash
-generate.integration.settings.sh
+./generate.integration.settings.sh
 # output:
 $WORKiNG_DIR/integration.settings.json
 ````
 
-**Run Integration Tests:**
+**Run NPM Integration Tests:**
 ````bash
-run.npm.integration-tests.sh
+./run.npm.integration-tests.sh
+````
+
+**Solace Broker Install & Setup RDP:**
+````bash
+solace-broker/setup.sh
+# output:
+$WORKiNG_DIR/solace-broker/broker.inventory.yml
+````
+**Run Broker Integration Tests:**
+````bash
+solace-broker/run-test.sh
+# output:
+$WORKiNG_DIR/solace-broker/post-events-to-broker.result.json
+````
+
+## Sending Messages to Broker
+````bash
+./post-events-to-broker.sh
+# output:
+$WORKiNG_DIR/solace-broker/post-events-to-broker.result.json
 ````
 
 ---
-## Delete Azure Resources
+## Remove Resources
+### Teardown Solace Broker
+````bash
+solace-broker/teardown.sh
+# removes
+$WORKiNG_DIR/solace-broker/broker.inventory.yml
+````
+### Delete Azure Resources
 ````bash
 azure/delete.az.resources.sh
 ````

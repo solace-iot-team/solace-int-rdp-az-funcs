@@ -13,7 +13,7 @@ source $SOLACE_INTEGRATION_PROJECT_HOME/.lib/functions.sh
 ############################################################################################################################
 # Settings
 
-  secretsBlobStorageFile=$(assertFile $scriptName "$WORKING_DIR/azure/secrets.blob-storage.json") || exit
+  secretsBlobStorageFile=$(assertFile $scriptName "$WORKING_DIR/azure/blob-storage.secrets.json") || exit
   templateLocalSettingsFile=$(assertFile $scriptName "$SOLACE_INTEGRATION_PROJECT_HOME/template.local.settings.json") || exit
   localSettingsFile="$SOLACE_INTEGRATION_PROJECT_HOME/local.settings.json"
 

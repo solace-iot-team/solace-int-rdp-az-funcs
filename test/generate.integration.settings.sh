@@ -23,6 +23,7 @@ source $SOLACE_INTEGRATION_PROJECT_HOME/.lib/functions.sh
     # "another-function"
   )
   functionAppInfoFile=$(assertFile $scriptName "$WORKING_DIR/azure/function.$functionAppName.info.json") || exit
+  blobStorageInfoFile=$(assertFile $scriptName "$WORKING_DIR/azure/blob-storage.info.json") || exit
 
 ############################################################################################################################
 # Run
@@ -30,10 +31,13 @@ echo " >>> Creating integration.settings.json ..."
 
   export functionAppHost=$(cat $functionAppInfoFile | jq -r '.defaultHostName')
   # read the local settings
-  localSettings=$(cat $localSettingsFile | jq .)
+  localSettings=$(cat $localSettingsFile | jq . )
   export connectionString=$(echo $localSettings | jq -r '.Values.Rdp2BlobStorageConnectionString')
   export containerName=$(echo $localSettings | jq -r '.Values.Rdp2BlobStorageContainerName')
   export pathPrefix=$(echo $localSettings | jq -r '.Values.Rdp2BlobStoragePathPrefix')
+  # read blob storage info
+  blobStorageInfo=$(cat $blobStorageInfoFile | jq . )
+  export blobStorageAccountName=$(echo $blobStorageInfo | jq -r '.name')
 
   for function in ${functions[@]}; do
     echo " function:$function ..."
@@ -49,6 +53,7 @@ echo " >>> Creating integration.settings.json ..."
       integrationSettings=$(echo $integrationSettings | jq '."'$function'".azure.storage.connection_string=env.connectionString')
       integrationSettings=$(echo $integrationSettings | jq '."'$function'".azure.storage.container_name=env.containerName')
       integrationSettings=$(echo $integrationSettings | jq '."'$function'".azure.storage.path_prefix=env.pathPrefix')
+      integrationSettings=$(echo $integrationSettings | jq '."'$function'".azure.storage.account_name=env.blobStorageAccountName')
 
       echo $integrationSettings | jq . > $outSettingsFile
 

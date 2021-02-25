@@ -23,8 +23,8 @@ dataLakeAccountName="solacedatalake"
 sku="Standard_LRS"
 
 outputDir="$WORKING_DIR/azure"; mkdir -p $outputDir; rm -rf $outputDir/*;
-outputInfoFile="$outputDir/info.blob-storage.json"
-outputSecretsFile="$outputDir/secrets.blob-storage.json"
+outputInfoFile="$outputDir/blob-storage.info.json"
+outputSecretsFile="$outputDir/blob-storage.secrets.json"
 
 echo " >>> Creating Resource Group ..."
   az group create \

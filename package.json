@@ -15,9 +15,10 @@
     "integration",
     "rdp",
     "azure",
-    "functions"
+    "functions",
+    "blobstorage"
   ],
-  "author": "Solace Corporation - Solace-IoT-Team",
+  "author": "Solace Corporation",
   "contributors": [
     {
       "name": "Ricardo Gomez-Ulmke",
@@ -30,8 +31,10 @@
     "watch": "tsc -w",
     "prestart": "npm run build",
     "start": "func start",
-    "unit-test": "mocha -r ts-node/register ./**/*.unit.spec.ts",
-    "integration-test": "mocha --timeout 180000 -r ts-node/register ./**/*.integration.spec.ts"
+    "unit-tests": "mocha -r ts-node/register ./**/*.unit.spec.ts",
+    "integration-tests": "mocha --timeout 180000 -r ts-node/register ./**/*.integration.spec.ts",
+    "azc": "mocha --timeout 180000 -r ts-node/register ./**/azure-container.integration.spec.ts",
+    "az": "mocha --timeout 180000 -r ts-node/register ./**/azure.integration.spec.ts"
   },
   "dependencies": {
     "@azure/storage-blob": "^12.4.1"
