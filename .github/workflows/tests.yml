@@ -12,22 +12,22 @@ on:
   #   # - cron: '0 5 * * THU'
   #   - cron: '0 5 * * *'
 
-  pull_request:
-    branches:
-      - master
+  # pull_request:
+  #   branches:
+  #     - master
 
 env:
-
   DEBUG_FLAG: ${{ true }}
   TEST_HOME: "test"
 
 jobs:
   run_tests:
-
     runs-on: ubuntu 18.04
-
     steps:
+      - run: |
+          echo "hello world"
 
+          
       - name: Check Auth
         if: github.event_name == 'workflow_dispatch' && github.actor != 'ricardojosegomezulmke'
         run: |
