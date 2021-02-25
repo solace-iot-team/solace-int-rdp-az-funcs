@@ -49,14 +49,20 @@ jobs:
           echo "environment: TEST_* "
           env | grep TEST
 
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+
       - name: install components
         run: |
-          sudo apt install python3-pip
-          sudo python3 -m pip install --upgrade pip
-          sudo -H python3 -m pip install ansible
-          # sudo pip install requests
-          # sudo pip install xmltodict
-          # sudo pip install docker-compose
+          python -m pip install --upgrade pip
+          pip install ansible
+          exit 1
+
+          # pip install requests
+          # pip install xmltodict
+          # pip install docker-compose
           # ansible-galaxy collection install solace.pubsub_plus
 
       - name: env after install
@@ -66,7 +72,6 @@ jobs:
           echo "node --version: "; node --version
           echo "npm --version: "; npm --version
           echo "python3 --version: "; python3 --version
-          echo "python3 -m pip --version: "; python3 -m pip --version
           echo "jq --version: "; jq --version
           echo "ansible --version: "; ansible --version
           echo "ansible-galaxy --version: "; ansible-galaxy --version
