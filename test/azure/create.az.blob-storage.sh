@@ -20,7 +20,7 @@ source $SOLACE_INTEGRATION_PROJECT_HOME/.lib/functions.sh
 resourceGroupName="$SOLACE_INTEGRATION_AZURE_PROJECT_NAME-rg"
 azLocation="$SOLACE_INTEGRATION_AZURE_LOCATION"
 randomNum=$((1 + $RANDOM % 10000))
-dataLakeAccountName="solacedatalake-$randomNum"
+dataLakeAccountName="solacedatalake$randomNum"
 sku="Standard_LRS"
 
 outputDir="$WORKING_DIR/azure"; mkdir -p $outputDir; rm -rf $outputDir/*;

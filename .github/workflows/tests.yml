@@ -12,8 +12,8 @@ on:
       feature-app-settings
 
   # schedule:
-  #   # - cron: '0 5 * * THU'
-  #   - cron: '0 5 * * *'
+  #   # - cron: '0 7 * * MON'
+  #   - cron: '0 7 * * *'
 
   # pull_request:
   #   branches:
