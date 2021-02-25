@@ -53,6 +53,7 @@ testScripts=(
   for testScript in ${testScripts[@]}; do
     if [ "$FAILED" -eq 0 ]; then
       runScript="$scriptDir/$testScript"
+      echo "starting: $runScript ..."
       if [[ "$RUN_FG" == "false" ]]; then
         logFile="$LOG_DIR/$testScript.out"; mkdir -p "$(dirname "$logFile")";
         $runScript > $logFile 2>&1
@@ -60,6 +61,7 @@ testScripts=(
         $runScript
       fi
       code=$?; if [[ $code != 0 ]]; then echo ">>> ERROR - code=$code - runScript='$runScript' - $scriptName"; FAILED=1; fi
+      echo "success"
     fi
   done
 
