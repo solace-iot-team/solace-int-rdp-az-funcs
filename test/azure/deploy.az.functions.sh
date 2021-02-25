@@ -64,17 +64,25 @@ echo " >>> Deploying function ..."
     echo " >>> success."
 
     echo " >>> retrieving function secrets ..."
-    echo "     sleeping for 5m"; sleep 5m;
-      functionAppInfo=$(cat $outputFunctionAppShowFile | jq .)
-      appId=$(echo $functionAppInfo | jq -r '.id')
-      outputFunctionSecretsFile="$outputDir/function.$functionAppName.$function.secrets.json"
-      az rest \
-        --method post \
-        --uri "$appId/functions/$function/listKeys?api-version=2018-11-01" \
-        --verbose \
-        > $outputFunctionSecretsFile
-        if [[ $? != 0 ]]; then echo " >>> ERROR: retrieving function secrets: $functionAppName.$function"; exit 1; fi
-        cat $outputFunctionSecretsFile | jq .
+      code=1; tries=0
+      while [[ $code -gt 0 && $tries -lt 10 ]]; do
+        ((tries++))
+        functionAppInfo=$(cat $outputFunctionAppShowFile | jq .)
+        appId=$(echo $functionAppInfo | jq -r '.id')
+        outputFunctionSecretsFile="$outputDir/function.$functionAppName.$function.secrets.json"
+        az rest \
+          --method post \
+          --uri "$appId/functions/$function/listKeys?api-version=2018-11-01" \
+          --verbose \
+          > $outputFunctionSecretsFile
+        code=$?
+        if [[ $code != 0 ]]; then
+          echo "code=$code && tries=$tries, sleep 2m"
+          sleep 2m;
+        fi
+      done
+      if [[ $code != 0 ]]; then echo " >>> ERROR: retrieving function secrets: $functionAppName.$function"; exit 1; fi
+      cat $outputFunctionSecretsFile | jq .
     echo " >>> success."
   done
 echo " >>> Success."
