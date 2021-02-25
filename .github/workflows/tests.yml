@@ -25,7 +25,7 @@ env:
   TEST_SOLACE_INTEGRATION_AZURE_LOCATION: "West Europe"
   TEST_TEST_RUNNER_SCRIPT: "test/run.sh"
   TEST_TEST_RUNNER_LOGS_DIR: "tmp/logs"
-  TEST_OUTPUT_LOGS_NAME: "test-logs"
+  TEST_OUTPUT_LOGS_NAME: "solace-int-rdp-az-funcs-test-logs"
 
 jobs:
   run_tests:
