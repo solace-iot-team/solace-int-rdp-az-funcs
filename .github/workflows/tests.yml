@@ -40,6 +40,12 @@ jobs:
       - name: Print test env
         if: env.DEBUG_FLAG == 'true'
         run: |
+          echo "pre-installed versions"
+          node --version
+          npm --version
+          python3 --version
+          jq --version
+          echo "environment: TEST_* "
           env | grep TEST
 
       - name: Azure Login
@@ -48,6 +54,13 @@ jobs:
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
 
+      - name: check installed versions
+        if: env.DEBUG_FLAG == 'true'
+        run: |
+          node --version
+          npm --version
+          python3 --version
+          jq --version
 
       # - name: Print test env
       #   if: env.DEBUG_FLAG == 'true'
