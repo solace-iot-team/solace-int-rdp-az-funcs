@@ -40,7 +40,6 @@ jobs:
       - name: env before install
         if: env.DEBUG_FLAG == 'true'
         run: |
-          echo "pre-installed versions"
           echo "bash --version: "; bash --version
           echo "node --version: "; node --version
           echo "npm --version: "; npm --version
@@ -54,19 +53,23 @@ jobs:
         run: |
           sudo apt install python3-pip
           sudo python -m pip install --upgrade pip
+          sudo pip install ansible
+          sudo pip install requests
+          sudo pip install xmltodict
+          sudo pip install docker-compose
+          ansible-galaxy collection install solace.pubsub_plus
 
       - name: env after install
         if: env.DEBUG_FLAG == 'true'
         run: |
-          echo "pre-installed versions"
           echo "bash --version: "; bash --version
           echo "node --version: "; node --version
           echo "npm --version: "; npm --version
           echo "python3 --version: "; python3 --version
           echo "pip --version: "; pip --version
           echo "jq --version: "; jq --version
-          echo "environment: TEST_* "
-          env | grep TEST
+          echo "ansible --version: "; ansible --version
+          echo "ansible-solace version::"; ansible-galaxy collection list | grep solace
 
       # - name: Azure Login
       #   # https://github.com/marketplace/actions/azure-login
@@ -75,13 +78,10 @@ jobs:
       #     creds: ${{secrets.AZURE_CREDENTIALS}}
 
 
-      - name: check installed versions
-        if: env.DEBUG_FLAG == 'true'
-        run: |
-          node --version
-          npm --version
-          python3 --version
-          jq --version
+
+
+
+
 
       # - name: Print test env
       #   if: env.DEBUG_FLAG == 'true'
