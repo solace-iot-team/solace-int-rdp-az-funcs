@@ -7,8 +7,8 @@ source $SOLACE_INTEGRATION_PROJECT_HOME/.lib/functions.sh
 ############################################################################################################################
 # Environment Variables
 
-  if [ -z "$LOG_DIR" ]; then export LOG_DIR="$SOLACE_INTEGRATION_PROJECT_HOME/logs"; mkdir -p $LOG_DIR; fi
   if [ -z "$WORKING_DIR" ]; then export WORKING_DIR="$SOLACE_INTEGRATION_PROJECT_HOME/tmp"; mkdir -p $WORKING_DIR; fi
+  if [ -z "$LOG_DIR" ]; then export LOG_DIR="$WORKING_DIR/logs"; mkdir -p $LOG_DIR; fi
 
 ############################################################################################################################
 # Settings
