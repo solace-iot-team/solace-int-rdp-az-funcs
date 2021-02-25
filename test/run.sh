@@ -68,15 +68,14 @@ testScripts=(
 ##############################################################################################################################
 # Check for errors
 
-filePattern="$LOG_DIR"
-errors=$(grep -n -r -e "ERROR" $filePattern )
-npm_errors=$(grep -n -r -e "failing" $filePattern )
-
-if [[ -z "$errors" && -z "$npm_errors" && "$FAILED" -eq 0 ]]; then
+if [[ "$FAILED" -eq 0 ]]; then
   echo ">>> FINISHED:SUCCESS - $scriptName"
   touch "$LOG_DIR/$scriptName.SUCCESS.out"
 else
   echo ">>> FINISHED:FAILED";
+  filePattern="$LOG_DIR"
+  errors=$(grep -n -r -e "ERROR" $filePattern )
+  npm_errors=$(grep -n -r -e "failing" $filePattern )
   if [ ! -z "$errors" ]; then
     while IFS= read line; do
       echo $line >> "$LOG_DIR/$scriptName.ERROR.out"
@@ -89,6 +88,28 @@ else
   fi
   exit 1
 fi
+
+# filePattern="$LOG_DIR"
+# errors=$(grep -n -r -e "ERROR" $filePattern )
+# npm_errors=$(grep -n -r -e "failing" $filePattern )
+#
+# if [[ -z "$errors" && -z "$npm_errors" && "$FAILED" -eq 0 ]]; then
+#   echo ">>> FINISHED:SUCCESS - $scriptName"
+#   touch "$LOG_DIR/$scriptName.SUCCESS.out"
+# else
+#   echo ">>> FINISHED:FAILED";
+#   if [ ! -z "$errors" ]; then
+#     while IFS= read line; do
+#       echo $line >> "$LOG_DIR/$scriptName.ERROR.out"
+#     done < <(printf '%s\n' "$errors")
+#   fi
+#   if [ ! -z "$npm_errors" ]; then
+#     while IFS= read line; do
+#       echo $line >> "$LOG_DIR/$scriptName.ERROR.out"
+#     done < <(printf '%s\n' "$npm_errors")
+#   fi
+#   exit 1
+# fi
 
 ###
 # The End.

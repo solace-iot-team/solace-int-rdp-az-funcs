@@ -50,30 +50,43 @@ echo " >>> Deploying function ..."
 
     zipDeployFile=$(assertFile $scriptName "$releasePackagesDir/$function.v$packageVersion/$function.v$packageVersion.zip") || exit
     echo " >>> deploying function zip file: $zipDeployFile ..."
-    echo "     sleeping for 2m"; sleep 2m;
       outputFunctionAppDeploymentSourceConfigZipFile="$outputDir/function.$functionAppName.$function.zip-deploy.json"
-      az functionapp deployment source config-zip \
-          --resource-group $resourceGroupName \
-          --name $functionAppName \
-          --src $zipDeployFile \
-          --timeout 300 \
-          --verbose \
-          > $outputFunctionAppDeploymentSourceConfigZipFile
-      if [[ $? != 0 ]]; then echo " >>> ERROR: deploying function zip file: $zipDeployFile"; exit 1; fi
+      code=1; tries=0
+      while [[ $code -gt 0 && $tries -lt 20 ]]; do
+        ((tries++))
+        az functionapp deployment source config-zip \
+            --resource-group $resourceGroupName \
+            --name $functionAppName \
+            --src $zipDeployFile \
+            --timeout 300 \
+            --verbose \
+            > $outputFunctionAppDeploymentSourceConfigZipFile
+        code=$?
+        if [[ $code != 0 ]]; then
+          echo "code=$code && tries=$tries, sleep 1m"
+          sleep 1m;
+        fi
+      done
+      if [[ $code != 0 ]]; then echo " >>> ERROR: deploying function zip file: $zipDeployFile"; exit 1; fi
       cat $outputFunctionAppDeploymentSourceConfigZipFile | jq .
     echo " >>> success."
 
     echo " >>> retrieving function secrets ..."
+      functionAppInfo=$(cat $outputFunctionAppShowFile | jq .)
+      appId=$(echo $functionAppInfo | jq -r '.id')
+      outputFunctionSecretsFile="$outputDir/function.$functionAppName.$function.secrets.json"
       code=1; tries=0
       while [[ $code -gt 0 && $tries -lt 20 ]]; do
         ((tries++))
-        functionAppInfo=$(cat $outputFunctionAppShowFile | jq .)
-        appId=$(echo $functionAppInfo | jq -r '.id')
-        outputFunctionSecretsFile="$outputDir/function.$functionAppName.$function.secrets.json"
+        # resp=$(
+        #   az rest \
+        #     --method post \
+        #     --uri "$appId/functions/$function/listKeys?api-version=2018-11-01"
+        # )
         az rest \
           --method post \
           --uri "$appId/functions/$function/listKeys?api-version=2018-11-01" \
-          --verbose \
+          # --verbose \
           > $outputFunctionSecretsFile
         code=$?
         if [[ $code != 0 ]]; then
@@ -81,6 +94,7 @@ echo " >>> Deploying function ..."
           sleep 1m;
         fi
       done
+      # echo $resp > $outputFunctionSecretsFile
       if [[ $code != 0 ]]; then echo " >>> ERROR: retrieving function secrets: $functionAppName.$function"; exit 1; fi
       cat $outputFunctionSecretsFile | jq .
     echo " >>> success."

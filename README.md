@@ -1,5 +1,9 @@
 # Solace Integration: RDP to Azure Functions
 
+
+TODO: badge
+TODO: describe paramters for rdp-2-blob function
+
 This repository is for active development of the integrations of Solace REST Delivery Point (RDP) to Azure Functions.
 For consumers and project examples we recommend visiting [solace-integration/solace-rdp-az-functions](xxx).
 
