@@ -1,5 +1,6 @@
 # Solace Integration: RDP to Azure Functions
 
+[![tests](https://github.com/solace-iot-team/solace-int-rdp-az-funcs/actions/workflows/tests.yml/badge.svg)](https://github.com/solace-iot-team/solace-int-rdp-az-funcs/actions/workflows/tests.yml)
 
 TODO: badge
 TODO: describe paramters for rdp-2-blob function
