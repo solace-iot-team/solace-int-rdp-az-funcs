@@ -1,8 +1,8 @@
 azure-functions-core-tools
-local.settings.json
+local*
 .DS_Store
 tmp
-deleteme*
+
 
 
 # Logs

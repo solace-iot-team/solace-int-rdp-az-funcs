@@ -22,8 +22,17 @@ export SOLACE_INTEGRATION_AZURE_LOCATION="{azure location}"
 
 # optional:
 export WORKING_DIR="local path to a working dir"
+  # default: export WORKING_DIR="$SOLACE_INTEGRATION_PROJECT_HOME/tmp"
+
+export DATA_LAKE_ACCOUNT_NAME="{unique storage account name for data lake}"
   # default:
-  export WORKING_DIR="$SOLACE_INTEGRATION_PROJECT_HOME/tmp"
+    # randomNum=$((1 + $RANDOM % 10000))
+    # export DATA_LAKE_ACCOUNT_NAME="solacedatalake$randomNum"
+export FUNCTION_APP_STORAGE_ACCOUNT_NAME="{unique storage account name for function app}"
+  # default:
+    # randomNum=$((1 + $RANDOM % 10000))
+    # export FUNCTION_APP_STORAGE_ACCOUNT_NAME="solacefastorage$randomNum"
+
 ````
 
 ## Local Test with Azure Blob Storage
