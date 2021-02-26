@@ -80,7 +80,7 @@ echo " >>> Deploying function ..."
         ((tries++))
         az rest \
           --method post \
-          --uri "$appId/functions/$function-x/listKeys?api-version=2018-11-01" \
+          --uri "$appId/functions/$function/listKeys?api-version=2018-11-01" \
           --verbose \
           --output-file $outputFunctionSecretsFile
         code=$?
