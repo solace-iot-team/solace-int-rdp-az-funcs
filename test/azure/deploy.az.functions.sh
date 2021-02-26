@@ -84,7 +84,6 @@ echo " >>> Deploying function ..."
           --verbose \
           --output-file $outputFunctionSecretsFile
         code=$?
-        echo "******* code=$code **********"
         if [[ $code != 0 ]]; then
           echo "code=$code && tries=$tries, sleep 1m"
           sleep 1m;
