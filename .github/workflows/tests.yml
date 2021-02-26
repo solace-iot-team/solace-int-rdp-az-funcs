@@ -6,7 +6,7 @@
 name: tests
 on:
   # for testing
-  workflow_dispatch:
+  # workflow_dispatch:
   # push:
   #   branches:
   #     feature-app-settings
