@@ -78,23 +78,18 @@ echo " >>> Deploying function ..."
       code=1; tries=0
       while [[ $code -gt 0 && $tries -lt 20 ]]; do
         ((tries++))
-        # resp=$(
-        #   az rest \
-        #     --method post \
-        #     --uri "$appId/functions/$function/listKeys?api-version=2018-11-01"
-        # )
         az rest \
           --method post \
-          --uri "$appId/functions/$function/listKeys?api-version=2018-11-01" \
-          # --verbose \
-          > $outputFunctionSecretsFile
+          --uri "$appId/functions/$function-x/listKeys?api-version=2018-11-01" \
+          --verbose \
+          --output-file $outputFunctionSecretsFile
         code=$?
+        echo "******* code=$code **********"
         if [[ $code != 0 ]]; then
           echo "code=$code && tries=$tries, sleep 1m"
           sleep 1m;
         fi
       done
-      # echo $resp > $outputFunctionSecretsFile
       if [[ $code != 0 ]]; then echo " >>> ERROR: retrieving function secrets: $functionAppName.$function"; exit 1; fi
       cat $outputFunctionSecretsFile | jq .
     echo " >>> success."
