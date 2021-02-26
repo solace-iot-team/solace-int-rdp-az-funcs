@@ -1,0 +1,20 @@
+-
+  name: Setup Broker Playbook
+  hosts: localhost
+  gather_facts: no
+  any_errors_fatal: true
+  vars:
+    broker_image: "solace/solace-pubsub-standard:latest"
+    # broker_image: "solace/solace-pubsub-standard:9.6.0.46"
+  tasks:
+    - set_fact:
+        inventory_file: "{{ BROKER_INVENTORY_FILE }}"
+
+    - name: "Local Broker Setup"
+      include_role:
+        name: solace.pubsub_plus.solace_broker_service
+      vars:
+        service_type: docker_single_node
+        project_name: test_rdp_to_az_func
+        image: "{{ broker_image }}"
+        generated_inventory_file: "{{ inventory_file }}"

@@ -3,9 +3,9 @@
   "Values": {
     "AzureWebJobsStorage": "",
     "FUNCTIONS_WORKER_RUNTIME": "node",
-    "STORAGE_CONNECTION_STRING": "{connection string}",
-    "STORAGE_CONTAINER_NAME": "{container name}",
-    "STORAGE_PATH_PREFIX": "{fixed path prefix}"
+    "Rdp2BlobStorageConnectionString": "{connection string}",
+    "Rdp2BlobStorageContainerName": "{container name}",
+    "Rdp2BlobStoragePathPrefix": "{fixed path prefix}"
   },
   "Host": {
     "LocalHttpPort": 7071,

@@ -1,0 +1,17 @@
+-
+  name: Teardown Broker Playbook
+  hosts: localhost
+  gather_facts: no
+  any_errors_fatal: true
+  tasks:
+    - set_fact:
+        inventory_file: "{{ BROKER_INVENTORY_FILE }}"
+
+    - name: "Local Broker Teardown"
+      include_role:
+        name: solace.pubsub_plus.solace_broker_service
+      vars:
+        service_type: docker_single_node
+        state: absent
+        project_name: test_rdp_to_az_func
+        generated_inventory_file: "{{ inventory_file }}"

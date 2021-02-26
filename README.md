@@ -1,58 +1,67 @@
 # Solace Integration: RDP to Azure Functions
 
-This repository is for active development of the integrations of Solace REST Delivery Point (RDP) to Azure Functions.
-For consumers and project examples we recommend visiting [solace-integration/solace-rdp-az-functions](xxx).
+[![tests](https://github.com/solace-iot-team/solace-int-rdp-az-funcs/actions/workflows/tests.yml/badge.svg)](https://github.com/solace-iot-team/solace-int-rdp-az-funcs/actions/workflows/tests.yml)
 
+Integrations of Solace with Azure Functions using the Solace Rest Delivery Point (RDP).
 
-**!!!!!!!!    UNDER CONSTRUCTION    !!!!!!!!**
-
-## Links
 [Issues](https://github.com/solace-iot-team/solace-int-rdp-az-funcs/issues) |
-[Project Samples](xxx) |
+[Release Notes](./ReleaseNotes.md) |
 
-## Pre-Requisites
+## solace-rdp-2-blob
 
-* node.js
-* [Azure CLI](https://docs.microsoft.com/en-gb/cli/azure/install-azure-cli-macos?view=azure-cli-latest)
-* Visual Studio Code
-* [Azure Functions Extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions)
+Azure Function integrating Solace RDP to Azure Storage (Blob).
 
-## Getting Started
+Sequence:
+- message ==> Solace Broker
+- Solace Broker Rest Delivery Point ==> Azure Function (solace-rdp-2-blob)
+- Azure Function ==> Azure Storage
 
-### Visual Studio Code
 
-Open the workspace: `solace-int-rdp-az-funcs.code-workspace`.
+### Azure Storage
 
-### Manual
-````bash
-cp template.local.settings.json local.settings.json
+- Account kind: StorageV2
+- Hierarchical namespace: enabled
 
-vi local.settings.json
- # add configuration
+### Azure Function
+[See also test directory for Build, Deploy, Test.](./test)
 
-````
+**Configuration:**
 
-````bash
-npm install
+[See ./solace-rdp-2-blob/template.app.settings.json](./solace-rdp-2-blob/template.app.settings.json)
 
-npm run build
+* **Rdp2BlobStorageContainerName**
+  - container name
+* **Rdp2BlobStoragePathPrefix**
+  - fixed path prefix for each file
+* **Rdp2BlobStorageConnectionString**
+  - connection string for the data lake storage account
 
-npm run start
 
-````
+**URI Query Parameters:**
 
-### Send Events to Function
+* **path**="{level-1/level-2/level-3/...}" - string, can be empty
+  - multi-level path for the file (message) in the Blob Storage
+  - appended to the _Rdp2BlobStoragePathPrefix_ configuration setting
 
-````bash
+* **pathCompose**=["withTime"], optional
+  - _withTime_
+    - generates a time-based storage path: YYYY/MM/DD/MM
+    - appended to _Rdp2BlobStoragePathPrefix/path_
 
-cd tests
-./func.post.event.sh
+**Ouptut:**
 
-````
+|http code|description|
+|---|---|
+|200   | ok, file written to storage  |
+|400   | bad request. return for config errors & query parameter errors  |
+|4xx   | pass-through of Azure blob storage REST Api  |
 
-## More
+Console log:
+- ERROR details in case of any errors
 
-[Deploy](./deploy).
+
+## Dev & Test
+
+[See test directory.](./test)
 
 ---
-The End.

@@ -1,0 +1,195 @@
+
+
+-
+  name: "Configure Broker"
+  hosts: all
+  gather_facts: no
+  any_errors_fatal: true
+  collections:
+    - solace.pubsub_plus
+  module_defaults:
+    solace_rdp:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ vpn }}"
+    solace_get_rdps:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ vpn }}"
+    solace_rdp_rest_consumer:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ vpn }}"
+    solace_rdp_rest_consumer_trusted_cn:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ vpn }}"
+    solace_rdp_queue_binding:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ vpn }}"
+    solace_queue:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ vpn }}"
+    solace_queue_subscription:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ vpn }}"
+    solace_cert_authority:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+  vars:
+    project_name: "solace-rdp-2-blob"
+    az_function_path: "p1/p2"
+    az_cert_name: "BaltimoreCyberTrustRoot"
+    az_cert_file: "{{ working_dir }}/{{ az_cert_name }}.crt.pem"
+  tasks:
+    - name: check input
+      set_fact:
+        integration_settings_file: "{{ INTEGRATION_SETTINGS_FILE }}"
+        working_dir: "{{ WORKING_DIR }}"
+
+    - name: load integration settings
+      include_vars:
+        file: "{{ integration_settings_file }}"
+        name: integration_settings
+
+    - name: extract parts of integration settings
+      set_fact:
+        settings_azure_function: "{{ integration_settings[project_name].azure.function }}"
+        settings_broker_rdp: "{{ integration_settings[project_name].broker.rdp_settings }}"
+
+    - name: download azure cert
+      get_url:
+        url: "https://cacerts.digicert.com/{{ az_cert_name }}.crt.pem"
+        dest: "{{ az_cert_file }}"
+
+    - name: create rdp - disabled
+      solace_rdp:
+        name: "{{ project_name }}"
+        settings:
+          enabled: false
+        state: present
+
+    - name: create rdp rest consumer - disabled
+      solace_rdp_rest_consumer:
+        rdp_name: "{{ project_name }}"
+        name: "{{ project_name }}"
+        settings:
+          enabled: false
+          remoteHost: "{{ settings_azure_function.host }}"
+          remotePort: "{{ settings_azure_function.port }}"
+          tlsEnabled: "{{ settings_broker_rdp.tls_enabled }}"
+          outgoingConnectionCount: "{{ settings_broker_rdp.outgoing_connection_count }}"
+          maxPostWaitTime: "{{ settings_broker_rdp.max_response_wait_time_secs }}"
+          retryDelay: "{{ settings_broker_rdp.connection_retry_delay_secs }}"
+        state: present
+
+    - name: add trusted common name
+      solace_rdp_rest_consumer_trusted_cn:
+        rdp_name: "{{ project_name }}"
+        rest_consumer_name: "{{ project_name}}"
+        name: "{{ settings_broker_rdp.trusted_common_name }}"
+        state: present
+
+    - name: ensure no queue - start clean
+      solace_queue:
+        name: "{{ project_name }}"
+        state: absent
+
+    - name: create queue
+      solace_queue:
+        name: "{{ project_name }}"
+        settings:
+          egressEnabled: true
+          ingressEnabled: true
+          permission: consume
+          owner: default
+        state: present
+
+    - name: add queue subscription
+      solace_queue_subscription:
+        queue: "{{ project_name }}"
+        topic: "{{ project_name }}/>"
+
+    - name: create rdp queue binding
+      solace_rdp_queue_binding:
+        rdp_name: "{{ project_name }}"
+        queue_name: "{{ project_name }}"
+        settings:
+          postRequestTarget: "/{{ settings_azure_function.route }}?code={{ settings_azure_function.code }}&path={{ az_function_path }}"
+        state: present
+
+    - name: upload azure cert
+      solace_cert_authority:
+        name: "{{ az_cert_name }}"
+        settings:
+          certContent: "{{ lookup('file', az_cert_file) }}"
+          revocationCheckEnabled: false
+        state: present
+
+    - name: enable rdp rest consumer
+      solace_rdp_rest_consumer:
+        rdp_name: "{{ project_name }}"
+        name: "{{ project_name }}"
+        settings:
+          enabled: true
+        state: present
+
+    - name: enable rdp
+      solace_rdp:
+        name: "{{ project_name }}"
+        settings:
+          enabled: true
+        state: present
+
+    - name: check if rdp is up
+      solace_get_rdps:
+        api: monitor
+        query_params:
+          where:
+            - "restDeliveryPointName=={{ project_name }}"
+      register: result
+      until: result.result_list[0].data.up
+      retries: 5
+      delay: 3
+    - assert:
+        that:
+          - result.result_list[0].data.up
+
+
+###
+# The End.

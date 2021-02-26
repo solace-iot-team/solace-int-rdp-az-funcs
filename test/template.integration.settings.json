@@ -1,0 +1,27 @@
+{
+  "solace-rdp-2-blob": {
+    "azure": {
+      "function": {
+        "code": "{function-code}",
+        "host": "{function-app}.azurewebsites.net",
+        "port": 443,
+        "route": "api/solace-rdp-2-blob"
+      },
+      "storage": {
+        "account_name": "{account-name}",
+        "connection_string": "{connection-string}",
+        "container_name": "{container-name}",
+        "path_prefix": "{path-prefix}"
+      }
+    },
+    "broker": {
+      "rdp_settings": {
+        "tls_enabled": true,
+        "trusted_common_name": "*.azurewebsites.net",
+        "outgoing_connection_count": 1,
+        "max_response_wait_time_secs": 60,
+        "connection_retry_delay_secs": 5
+      }
+    }
+  }
+}
